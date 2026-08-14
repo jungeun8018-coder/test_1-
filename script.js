@@ -310,36 +310,24 @@ function initSeasonEffects() {
 
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
   const validSeasons = ['spring', 'summer', 'autumn', 'winter'];
-  const month = new Date().getMonth() + 1;
-  const automaticSeason = month <= 2 || month === 12 ? 'winter' : month <= 5 ? 'spring' : month <= 8 ? 'summer' : 'autumn';
   const previewSeason = new URLSearchParams(window.location.search).get('season');
-  const requestedSeason = validSeasons.includes(previewSeason) ? previewSeason : hero.dataset.season;
-  const activeSeason = requestedSeason === 'auto' ? automaticSeason : requestedSeason;
-  hero.dataset.activeSeason = activeSeason;
+  let activeSeason = validSeasons.includes(previewSeason) ? previewSeason : 'spring';
   const seasonImages = {
     spring: 'images/hero-bellavi-spring.png',
     summer: 'images/hero-bellavi-summer-flowers.png',
     autumn: 'images/hero-bellavi-autumn.png',
     winter: 'images/hero-bellavi-winter.png',
   };
-  const image = hero.querySelector('[data-season-image]');
-  if (image && seasonImages[activeSeason]) {
-    let revealStarted = false;
-    const revealSeasonImage = async () => {
-      if (revealStarted) return;
-      revealStarted = true;
-      try {
-        await image.decode();
-      } catch {
-        /* 일부 브라우저는 decode를 지원하지 않아도 load 후 이미지를 표시할 수 있습니다. */
-      }
-      image.classList.add('season-image-ready');
-    };
-    image.classList.remove('season-image-ready');
-    image.addEventListener('load', revealSeasonImage, { once: true });
-    image.src = seasonImages[activeSeason];
-    if (image.complete && image.naturalWidth > 1) revealSeasonImage();
-  }
+  const firstImage = hero.querySelector('[data-season-image]');
+  if (!firstImage) return;
+
+  const secondImage = firstImage.cloneNode();
+  secondImage.removeAttribute('data-season-image');
+  secondImage.setAttribute('data-season-image-layer', '');
+  secondImage.removeAttribute('fetchpriority');
+  secondImage.alt = '';
+  secondImage.setAttribute('aria-hidden', 'true');
+  firstImage.after(secondImage);
 
   const effects = document.createElement('div');
   effects.className = 'season-effects';
@@ -349,7 +337,6 @@ function initSeasonEffects() {
   effects.append(windowArea);
   hero.querySelector('.hero-art')?.after(effects);
 
-  const enabled = (season) => activeSeason === season && !reducedMotion.matches;
   const layer = (season, parent = windowArea) => {
     const effectLayer = document.createElement('div');
     effectLayer.className = `season-effect-layer ${season}-effect-layer`;
@@ -357,15 +344,81 @@ function initSeasonEffects() {
     return effectLayer;
   };
   const components = [
-    new SpringEffect(layer('spring'), { enabled: enabled('spring'), asset: 'images/season-petal.png' }),
-    new SummerEffect(layer('summer', effects), { enabled: enabled('summer') }),
-    new AutumnEffect(layer('autumn'), { enabled: enabled('autumn'), asset: 'images/season-leaf.png' }),
-    new WinterEffect(layer('winter'), { enabled: enabled('winter'), asset: 'images/season-snowflake.png' }),
+    new SpringEffect(layer('spring'), { asset: 'images/season-petal.png' }),
+    new SummerEffect(layer('summer', effects)),
+    new AutumnEffect(layer('autumn'), { asset: 'images/season-leaf.png' }),
+    new WinterEffect(layer('winter'), { asset: 'images/season-snowflake.png' }),
   ];
 
+  let visibleImage = firstImage;
+  let hiddenImage = secondImage;
+  let rotationTimer;
+  let isChanging = false;
+  const seasonDuration = 8000;
+  const transitionDuration = 1000;
+
+  const setActiveSeason = (season) => {
+    activeSeason = season;
+    hero.dataset.activeSeason = season;
+    components.forEach((component, index) => {
+      component.setEnabled(!reducedMotion.matches && validSeasons[index] === season);
+    });
+  };
+
+  const loadSeasonImage = async (image, season) => {
+    image.classList.remove('season-image-ready');
+    image.src = seasonImages[season];
+    if (!image.complete || image.naturalWidth <= 1) {
+      await new Promise((resolve) => {
+        image.addEventListener('load', resolve, { once: true });
+        image.addEventListener('error', resolve, { once: true });
+      });
+    }
+    try {
+      await image.decode();
+    } catch {
+      /* decode를 지원하지 않는 브라우저도 load 후 이미지를 표시할 수 있습니다. */
+    }
+  };
+
+  const scheduleNextSeason = (delay = seasonDuration) => {
+    window.clearTimeout(rotationTimer);
+    if (!reducedMotion.matches) rotationTimer = window.setTimeout(showNextSeason, delay);
+  };
+
+  const showNextSeason = async () => {
+    if (isChanging || reducedMotion.matches) return;
+    isChanging = true;
+    const nextIndex = (validSeasons.indexOf(activeSeason) + 1) % validSeasons.length;
+    const nextSeason = validSeasons[nextIndex];
+    await loadSeasonImage(hiddenImage, nextSeason);
+    setActiveSeason(nextSeason);
+    hiddenImage.classList.add('season-image-ready');
+    visibleImage.classList.remove('season-image-ready');
+    await new Promise((resolve) => window.setTimeout(resolve, transitionDuration));
+    [visibleImage, hiddenImage] = [hiddenImage, visibleImage];
+    isChanging = false;
+    scheduleNextSeason(seasonDuration - transitionDuration);
+  };
+
+  const startSeasonRotation = async () => {
+    await loadSeasonImage(visibleImage, activeSeason);
+    setActiveSeason(activeSeason);
+    visibleImage.classList.add('season-image-ready');
+    Object.values(seasonImages).forEach((source) => {
+      const preload = new Image();
+      preload.src = source;
+    });
+    scheduleNextSeason();
+  };
+
   reducedMotion.addEventListener('change', ({ matches }) => {
+    window.clearTimeout(rotationTimer);
     components.forEach((component, index) => component.setEnabled(!matches && validSeasons[index] === activeSeason));
+    if (!matches) scheduleNextSeason();
   });
+
+  startSeasonRotation();
 }
 
 initSeasonEffects();
