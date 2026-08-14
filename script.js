@@ -323,7 +323,23 @@ function initSeasonEffects() {
     winter: 'images/hero-bellavi-winter.png',
   };
   const image = hero.querySelector('[data-season-image]');
-  if (image && seasonImages[activeSeason]) image.src = seasonImages[activeSeason];
+  if (image && seasonImages[activeSeason]) {
+    let revealStarted = false;
+    const revealSeasonImage = async () => {
+      if (revealStarted) return;
+      revealStarted = true;
+      try {
+        await image.decode();
+      } catch {
+        /* 일부 브라우저는 decode를 지원하지 않아도 load 후 이미지를 표시할 수 있습니다. */
+      }
+      image.classList.add('season-image-ready');
+    };
+    image.classList.remove('season-image-ready');
+    image.addEventListener('load', revealSeasonImage, { once: true });
+    image.src = seasonImages[activeSeason];
+    if (image.complete && image.naturalWidth > 1) revealSeasonImage();
+  }
 
   const effects = document.createElement('div');
   effects.className = 'season-effects';
