@@ -171,39 +171,39 @@ class SummerEffect extends SeasonEffect {
     /* 창문에서 테이블로 들어오는 햇빛 경로에만 작은 반짝임을 배치합니다. */
     [
       /* 꽃다발 안쪽 */
-      { top: 54, left: 43, size: .8, duration: 7, delay: -.12 },
-      { top: 57, left: 47, size: 1.05, duration: 7, delay: .08 },
-      { top: 60, left: 51, size: .7, duration: 7, delay: -.26 },
-      { top: 63, left: 55, size: 1.15, duration: 7, delay: .18 },
-      { top: 66, left: 59, size: .85, duration: 7, delay: -.06 },
-      { top: 69, left: 45, size: 1.2, duration: 7, delay: .28 },
-      { top: 72, left: 49, size: .7, duration: 7, delay: -.2 },
-      { top: 75, left: 53, size: 1, duration: 7, delay: .04 },
-      { top: 78, left: 57, size: .8, duration: 7, delay: -.3 },
-      { top: 81, left: 42, size: 1.1, duration: 7, delay: .14 },
-      { top: 84, left: 46, size: .9, duration: 7, delay: .24 },
-      { top: 55, left: 56, size: .65, duration: 7, delay: -.16 },
-      { top: 61, left: 41, size: 1.05, duration: 7, delay: .1 },
-      { top: 67, left: 52, size: .75, duration: 7, delay: -.28 },
-      { top: 73, left: 60, size: .95, duration: 7, delay: .2 },
-      { top: 80, left: 50, size: .7, duration: 7, delay: -.08 },
+      { top: 42, left: 58, size: .8, duration: 7, delay: -.12 },
+      { top: 44, left: 64, size: 1.05, duration: 7, delay: .08 },
+      { top: 46, left: 70, size: .7, duration: 7, delay: -.26 },
+      { top: 49, left: 54, size: 1.15, duration: 7, delay: .18 },
+      { top: 51, left: 60, size: .85, duration: 7, delay: -.06 },
+      { top: 53, left: 67, size: 1.2, duration: 7, delay: .28 },
+      { top: 55, left: 74, size: .7, duration: 7, delay: -.2 },
+      { top: 58, left: 50, size: 1, duration: 7, delay: .04 },
+      { top: 60, left: 57, size: .8, duration: 7, delay: -.3 },
+      { top: 62, left: 63, size: 1.1, duration: 7, delay: .14 },
+      { top: 64, left: 69, size: .9, duration: 7, delay: .24 },
+      { top: 66, left: 77, size: .65, duration: 7, delay: -.16 },
+      { top: 68, left: 53, size: 1.05, duration: 7, delay: .1 },
+      { top: 70, left: 60, size: .75, duration: 7, delay: -.28 },
+      { top: 72, left: 66, size: .95, duration: 7, delay: .2 },
+      { top: 71, left: 73, size: .7, duration: 7, delay: -.08 },
       /* 테이블 위 물건 */
-      { top: 82, left: 56, size: .75, duration: 7, delay: -.22 },
-      { top: 84, left: 60, size: 1, duration: 7, delay: .12 },
-      { top: 86, left: 64, size: .7, duration: 7, delay: -.04 },
-      { top: 88, left: 68, size: 1.1, duration: 7, delay: .26 },
-      { top: 90, left: 72, size: .8, duration: 7, delay: -.18 },
-      { top: 92, left: 76, size: .95, duration: 7, delay: .06 },
-      { top: 94, left: 80, size: .65, duration: 7, delay: -.3 },
-      { top: 96, left: 84, size: 1.05, duration: 7, delay: .16 },
-      { top: 83, left: 88, size: .7, duration: 7, delay: -.1 },
-      { top: 85, left: 92, size: .9, duration: 7, delay: .22 },
-      { top: 87, left: 58, size: .8, duration: 7, delay: -.26 },
-      { top: 89, left: 63, size: 1.15, duration: 7, delay: .02 },
-      { top: 91, left: 69, size: .7, duration: 7, delay: -.14 },
-      { top: 93, left: 75, size: 1, duration: 7, delay: .3 },
-      { top: 95, left: 82, size: .85, duration: 7, delay: -.06 },
-      { top: 97, left: 90, size: .7, duration: 7, delay: .1 },
+      { top: 78, left: 50, size: .75, duration: 7, delay: -.22 },
+      { top: 80, left: 56, size: 1, duration: 7, delay: .12 },
+      { top: 82, left: 63, size: .7, duration: 7, delay: -.04 },
+      { top: 84, left: 70, size: 1.1, duration: 7, delay: .26 },
+      { top: 86, left: 77, size: .8, duration: 7, delay: -.18 },
+      { top: 88, left: 84, size: .95, duration: 7, delay: .06 },
+      { top: 90, left: 91, size: .65, duration: 7, delay: -.3 },
+      { top: 92, left: 46, size: 1.05, duration: 7, delay: .16 },
+      { top: 94, left: 55, size: .7, duration: 7, delay: -.1 },
+      { top: 96, left: 64, size: .9, duration: 7, delay: .22 },
+      { top: 82, left: 74, size: .8, duration: 7, delay: -.26 },
+      { top: 85, left: 82, size: 1.15, duration: 7, delay: .02 },
+      { top: 88, left: 59, size: .7, duration: 7, delay: -.14 },
+      { top: 91, left: 68, size: 1, duration: 7, delay: .3 },
+      { top: 94, left: 78, size: .85, duration: 7, delay: -.06 },
+      { top: 96, left: 88, size: .7, duration: 7, delay: .1 },
     ].forEach((sparkle) => {
       const point = document.createElement('span');
       point.className = 'summer-sunlight-sparkle';
@@ -220,27 +220,27 @@ class SummerEffect extends SeasonEffect {
     /* 꽃잎과 테이블 위 물건의 밝은 면에만 별빛 모양의 하이라이트를 더합니다. */
     [
       /* 꽃다발 안쪽 */
-      { top: 55, left: 44, size: 5.2, duration: 7, delay: -.18 },
-      { top: 58, left: 49, size: 4.4, duration: 7, delay: .08 },
-      { top: 62, left: 53, size: 4, duration: 7, delay: -.3 },
-      { top: 66, left: 57, size: 5.6, duration: 7, delay: .2 },
-      { top: 70, left: 45, size: 4.6, duration: 7, delay: -.06 },
-      { top: 74, left: 50, size: 4.8, duration: 7, delay: .28 },
-      { top: 78, left: 55, size: 5.4, duration: 7, delay: -.22 },
-      { top: 82, left: 59, size: 4.2, duration: 7, delay: .12 },
-      { top: 68, left: 41, size: 5, duration: 7, delay: -.1 },
-      { top: 80, left: 47, size: 4.4, duration: 7, delay: .24 },
+      { top: 43, left: 60, size: 5.2, duration: 7, delay: -.18 },
+      { top: 46, left: 68, size: 4.4, duration: 7, delay: .08 },
+      { top: 50, left: 55, size: 4, duration: 7, delay: -.3 },
+      { top: 53, left: 63, size: 5.6, duration: 7, delay: .2 },
+      { top: 56, left: 72, size: 4.6, duration: 7, delay: -.06 },
+      { top: 60, left: 50, size: 4.8, duration: 7, delay: .28 },
+      { top: 63, left: 58, size: 5.4, duration: 7, delay: -.22 },
+      { top: 66, left: 67, size: 4.2, duration: 7, delay: .12 },
+      { top: 69, left: 75, size: 5, duration: 7, delay: -.1 },
+      { top: 71, left: 62, size: 4.4, duration: 7, delay: .24 },
       /* 테이블 위 물건 */
-      { top: 83, left: 57, size: 4.8, duration: 7, delay: -.24 },
-      { top: 85, left: 62, size: 5.2, duration: 7, delay: .06 },
-      { top: 87, left: 67, size: 4.2, duration: 7, delay: -.14 },
-      { top: 89, left: 72, size: 5.6, duration: 7, delay: .22 },
-      { top: 91, left: 77, size: 4.4, duration: 7, delay: -.28 },
-      { top: 93, left: 82, size: 5, duration: 7, delay: .14 },
-      { top: 95, left: 87, size: 4.6, duration: 7, delay: -.04 },
-      { top: 84, left: 92, size: 5.4, duration: 7, delay: .3 },
-      { top: 90, left: 58, size: 4, duration: 7, delay: -.16 },
-      { top: 96, left: 74, size: 4.8, duration: 7, delay: .1 },
+      { top: 78, left: 54, size: 4.8, duration: 7, delay: -.24 },
+      { top: 81, left: 62, size: 5.2, duration: 7, delay: .06 },
+      { top: 84, left: 70, size: 4.2, duration: 7, delay: -.14 },
+      { top: 87, left: 78, size: 5.6, duration: 7, delay: .22 },
+      { top: 90, left: 86, size: 4.4, duration: 7, delay: -.28 },
+      { top: 93, left: 92, size: 5, duration: 7, delay: .14 },
+      { top: 95, left: 60, size: 4.6, duration: 7, delay: -.04 },
+      { top: 82, left: 76, size: 5.4, duration: 7, delay: .3 },
+      { top: 89, left: 67, size: 4, duration: 7, delay: -.16 },
+      { top: 94, left: 80, size: 4.8, duration: 7, delay: .1 },
     ].forEach((glint) => {
       const highlight = document.createElement('span');
       highlight.className = 'summer-highlight-glint';
@@ -314,7 +314,7 @@ function initSeasonEffects() {
   let activeSeason = validSeasons.includes(previewSeason) ? previewSeason : 'spring';
   const seasonImages = {
     spring: 'images/hero-bellavi-spring.png',
-    summer: 'images/hero-bellavi-summer-flowers.png',
+    summer: 'images/hero-bellavi-summer-luminous-wildflowers.png',
     autumn: 'images/hero-bellavi-autumn.png',
     winter: 'images/hero-bellavi-winter.png',
   };
@@ -416,6 +416,11 @@ function initSeasonEffects() {
     window.clearTimeout(rotationTimer);
     components.forEach((component, index) => component.setEnabled(!matches && validSeasons[index] === activeSeason));
     if (!matches) scheduleNextSeason();
+  });
+
+  hero.addEventListener('click', (event) => {
+    if (event.target instanceof Element && event.target.closest('.hero-content')) return;
+    showNextSeason();
   });
 
   startSeasonRotation();
