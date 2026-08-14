@@ -85,3 +85,271 @@ if (lightboxTriggers.length) {
     if (event.target === dialog) closeLightbox();
   });
 }
+
+/* 히어로 창문용 계절 효과 공통 컴포넌트 */
+class SeasonEffect {
+  constructor(root, { enabled = false, asset = '' } = {}) {
+    this.root = root;
+    this.asset = asset;
+    this.timers = new Set();
+    this.setEnabled(enabled);
+  }
+
+  random(min, max) {
+    return Math.random() * (max - min) + min;
+  }
+
+  schedule(callback, delay) {
+    const timer = window.setTimeout(() => {
+      this.timers.delete(timer);
+      if (this.enabled) callback();
+    }, delay);
+    this.timers.add(timer);
+  }
+
+  particle(className, styles = {}) {
+    const image = document.createElement('img');
+    image.className = `season-particle ${className}`;
+    image.src = this.asset;
+    image.alt = '';
+    image.setAttribute('aria-hidden', 'true');
+    Object.entries(styles).forEach(([name, value]) => image.style.setProperty(name, value));
+    image.addEventListener('animationend', () => image.remove(), { once: true });
+    this.root.append(image);
+    return image;
+  }
+
+  setEnabled(enabled) {
+    if (this.enabled === enabled) return;
+    this.enabled = enabled;
+    this.timers.forEach(window.clearTimeout);
+    this.timers.clear();
+    this.root.replaceChildren();
+    if (enabled) this.start();
+  }
+}
+
+class SpringEffect extends SeasonEffect {
+  start() {
+    [0, 1300, 2700, 4200, 5900].forEach((delay) => this.spawn(delay));
+  }
+
+  spawn(delay = 0) {
+    if (this.root.querySelectorAll('.spring-fall').length >= 6) {
+      this.schedule(() => this.spawn(), this.random(1800, 3200));
+      return;
+    }
+    const duration = this.random(9, 12);
+    const direction = Math.random() < .5 ? -1 : 1;
+    const fall = document.createElement('span');
+    fall.className = 'spring-fall';
+    const styles = {
+      '--size': `${this.random(6, 10)}px`,
+      '--top': `${this.random(5, 24)}%`,
+      '--left': `${this.random(45, 90)}%`,
+      '--duration': `${duration}s`,
+      '--delay': `${delay}ms`,
+      '--drift': `${this.random(1.5, 4) * direction}vw`,
+      '--sway': `${this.random(1.2, 3.2)}vw`,
+      '--sway-duration': `${this.random(2.8, 4.8)}s`,
+    };
+    Object.entries(styles).forEach(([name, value]) => fall.style.setProperty(name, value));
+    const petal = document.createElement('img');
+    petal.className = 'spring-petal';
+    petal.src = this.asset;
+    petal.alt = '';
+    petal.setAttribute('aria-hidden', 'true');
+    fall.append(petal);
+    fall.addEventListener('animationend', () => fall.remove(), { once: true });
+    this.root.append(fall);
+    this.schedule(() => this.spawn(), delay + duration * 1000 + this.random(1200, 2600));
+  }
+}
+
+class SummerEffect extends SeasonEffect {
+  start() {
+    /* 창문에서 테이블로 들어오는 햇빛 경로에만 작은 반짝임을 배치합니다. */
+    [
+      /* 꽃다발 안쪽 */
+      { top: 54, left: 43, size: .8, duration: 7, delay: -.12 },
+      { top: 57, left: 47, size: 1.05, duration: 7, delay: .08 },
+      { top: 60, left: 51, size: .7, duration: 7, delay: -.26 },
+      { top: 63, left: 55, size: 1.15, duration: 7, delay: .18 },
+      { top: 66, left: 59, size: .85, duration: 7, delay: -.06 },
+      { top: 69, left: 45, size: 1.2, duration: 7, delay: .28 },
+      { top: 72, left: 49, size: .7, duration: 7, delay: -.2 },
+      { top: 75, left: 53, size: 1, duration: 7, delay: .04 },
+      { top: 78, left: 57, size: .8, duration: 7, delay: -.3 },
+      { top: 81, left: 42, size: 1.1, duration: 7, delay: .14 },
+      { top: 84, left: 46, size: .9, duration: 7, delay: .24 },
+      { top: 55, left: 56, size: .65, duration: 7, delay: -.16 },
+      { top: 61, left: 41, size: 1.05, duration: 7, delay: .1 },
+      { top: 67, left: 52, size: .75, duration: 7, delay: -.28 },
+      { top: 73, left: 60, size: .95, duration: 7, delay: .2 },
+      { top: 80, left: 50, size: .7, duration: 7, delay: -.08 },
+      /* 테이블 위 물건 */
+      { top: 82, left: 56, size: .75, duration: 7, delay: -.22 },
+      { top: 84, left: 60, size: 1, duration: 7, delay: .12 },
+      { top: 86, left: 64, size: .7, duration: 7, delay: -.04 },
+      { top: 88, left: 68, size: 1.1, duration: 7, delay: .26 },
+      { top: 90, left: 72, size: .8, duration: 7, delay: -.18 },
+      { top: 92, left: 76, size: .95, duration: 7, delay: .06 },
+      { top: 94, left: 80, size: .65, duration: 7, delay: -.3 },
+      { top: 96, left: 84, size: 1.05, duration: 7, delay: .16 },
+      { top: 83, left: 88, size: .7, duration: 7, delay: -.1 },
+      { top: 85, left: 92, size: .9, duration: 7, delay: .22 },
+      { top: 87, left: 58, size: .8, duration: 7, delay: -.26 },
+      { top: 89, left: 63, size: 1.15, duration: 7, delay: .02 },
+      { top: 91, left: 69, size: .7, duration: 7, delay: -.14 },
+      { top: 93, left: 75, size: 1, duration: 7, delay: .3 },
+      { top: 95, left: 82, size: .85, duration: 7, delay: -.06 },
+      { top: 97, left: 90, size: .7, duration: 7, delay: .1 },
+    ].forEach((sparkle) => {
+      const point = document.createElement('span');
+      point.className = 'summer-sunlight-sparkle';
+      point.setAttribute('aria-hidden', 'true');
+      const styles = {
+        '--sparkle-top': `${sparkle.top}%`, '--sparkle-left': `${sparkle.left}%`,
+        '--sparkle-size': `${sparkle.size}px`, '--sparkle-duration': `${sparkle.duration}s`,
+        '--sparkle-delay': `${sparkle.delay}s`,
+      };
+      Object.entries(styles).forEach(([name, value]) => point.style.setProperty(name, value));
+      this.root.append(point);
+    });
+
+    /* 꽃잎과 테이블 위 물건의 밝은 면에만 별빛 모양의 하이라이트를 더합니다. */
+    [
+      /* 꽃다발 안쪽 */
+      { top: 55, left: 44, size: 5.2, duration: 7, delay: -.18 },
+      { top: 58, left: 49, size: 4.4, duration: 7, delay: .08 },
+      { top: 62, left: 53, size: 4, duration: 7, delay: -.3 },
+      { top: 66, left: 57, size: 5.6, duration: 7, delay: .2 },
+      { top: 70, left: 45, size: 4.6, duration: 7, delay: -.06 },
+      { top: 74, left: 50, size: 4.8, duration: 7, delay: .28 },
+      { top: 78, left: 55, size: 5.4, duration: 7, delay: -.22 },
+      { top: 82, left: 59, size: 4.2, duration: 7, delay: .12 },
+      { top: 68, left: 41, size: 5, duration: 7, delay: -.1 },
+      { top: 80, left: 47, size: 4.4, duration: 7, delay: .24 },
+      /* 테이블 위 물건 */
+      { top: 83, left: 57, size: 4.8, duration: 7, delay: -.24 },
+      { top: 85, left: 62, size: 5.2, duration: 7, delay: .06 },
+      { top: 87, left: 67, size: 4.2, duration: 7, delay: -.14 },
+      { top: 89, left: 72, size: 5.6, duration: 7, delay: .22 },
+      { top: 91, left: 77, size: 4.4, duration: 7, delay: -.28 },
+      { top: 93, left: 82, size: 5, duration: 7, delay: .14 },
+      { top: 95, left: 87, size: 4.6, duration: 7, delay: -.04 },
+      { top: 84, left: 92, size: 5.4, duration: 7, delay: .3 },
+      { top: 90, left: 58, size: 4, duration: 7, delay: -.16 },
+      { top: 96, left: 74, size: 4.8, duration: 7, delay: .1 },
+    ].forEach((glint) => {
+      const highlight = document.createElement('span');
+      highlight.className = 'summer-highlight-glint';
+      highlight.setAttribute('aria-hidden', 'true');
+      const styles = {
+        '--glint-top': `${glint.top}%`, '--glint-left': `${glint.left}%`,
+        '--glint-size': `${glint.size}px`, '--glint-duration': `${glint.duration}s`,
+        '--glint-delay': `${glint.delay}s`,
+      };
+      Object.entries(styles).forEach(([name, value]) => highlight.style.setProperty(name, value));
+      this.root.append(highlight);
+    });
+  }
+}
+
+class AutumnEffect extends SeasonEffect {
+  start() {
+    [0, 2400, 5100].forEach((delay) => this.spawn(delay));
+  }
+
+  spawn(delay = 0) {
+    const rotation = this.random(-90, 90);
+    const duration = this.random(8, 14);
+    this.particle('autumn-leaf', {
+      '--size': `${this.random(7, 11)}px`,
+      '--top': `${this.random(2, 20)}%`,
+      '--left': `${this.random(8, 54)}%`,
+      '--duration': `${duration}s`,
+      '--delay': `${delay}ms`,
+      '--rotate-start': `${-rotation / 2}deg`,
+      '--rotate-end': `${rotation}deg`,
+    });
+    this.schedule(() => this.spawn(), delay + duration * 1000 + this.random(1800, 4200));
+  }
+}
+
+class WinterEffect extends SeasonEffect {
+  start() {
+    this.zone = Math.floor(this.random(0, 4));
+    [0, 900, 1800, 2700].forEach((delay) => this.schedule(() => this.spawn(), delay));
+  }
+
+  spawn() {
+    if (this.root.querySelectorAll('.winter-snowflake').length >= 4) {
+      this.schedule(() => this.spawn(), this.random(2000, 5000));
+      return;
+    }
+    const rotation = this.random(-30, 30);
+    const zoneWidth = 21;
+    const left = 5 + this.zone * zoneWidth + this.random(2, zoneWidth - 3);
+    this.zone = (this.zone + 1) % 4;
+    this.particle('winter-snowflake', {
+      '--size': `${this.random(5, 10)}px`,
+      '--left': `${left}%`,
+      '--duration': `${this.random(13, 18)}s`,
+      '--drift': `${this.random(-2, 2)}vw`,
+      '--rotate-start': `${-rotation}deg`,
+      '--rotate-end': `${rotation}deg`,
+    });
+    this.schedule(() => this.spawn(), this.random(2000, 5000));
+  }
+}
+
+function initSeasonEffects() {
+  const hero = document.querySelector('.portfolio-hero[data-season]');
+  if (!hero) return;
+
+  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+  const validSeasons = ['spring', 'summer', 'autumn', 'winter'];
+  const month = new Date().getMonth() + 1;
+  const automaticSeason = month <= 2 || month === 12 ? 'winter' : month <= 5 ? 'spring' : month <= 8 ? 'summer' : 'autumn';
+  const previewSeason = new URLSearchParams(window.location.search).get('season');
+  const requestedSeason = validSeasons.includes(previewSeason) ? previewSeason : hero.dataset.season;
+  const activeSeason = requestedSeason === 'auto' ? automaticSeason : requestedSeason;
+  hero.dataset.activeSeason = activeSeason;
+  const seasonImages = {
+    spring: 'images/hero-bellavi-spring.png',
+    summer: 'images/hero-bellavi-summer-flowers.png',
+    autumn: 'images/hero-bellavi-autumn.png',
+    winter: 'images/hero-bellavi-winter.png',
+  };
+  const image = hero.querySelector('[data-season-image]');
+  if (image && seasonImages[activeSeason]) image.src = seasonImages[activeSeason];
+
+  const effects = document.createElement('div');
+  effects.className = 'season-effects';
+  effects.setAttribute('aria-hidden', 'true');
+  const windowArea = document.createElement('div');
+  windowArea.className = 'season-window';
+  effects.append(windowArea);
+  hero.querySelector('.hero-art')?.after(effects);
+
+  const enabled = (season) => activeSeason === season && !reducedMotion.matches;
+  const layer = (season, parent = windowArea) => {
+    const effectLayer = document.createElement('div');
+    effectLayer.className = `season-effect-layer ${season}-effect-layer`;
+    parent.append(effectLayer);
+    return effectLayer;
+  };
+  const components = [
+    new SpringEffect(layer('spring'), { enabled: enabled('spring'), asset: 'images/season-petal.png' }),
+    new SummerEffect(layer('summer', effects), { enabled: enabled('summer') }),
+    new AutumnEffect(layer('autumn'), { enabled: enabled('autumn'), asset: 'images/season-leaf.png' }),
+    new WinterEffect(layer('winter'), { enabled: enabled('winter'), asset: 'images/season-snowflake.png' }),
+  ];
+
+  reducedMotion.addEventListener('change', ({ matches }) => {
+    components.forEach((component, index) => component.setEnabled(!matches && validSeasons[index] === activeSeason));
+  });
+}
+
+initSeasonEffects();

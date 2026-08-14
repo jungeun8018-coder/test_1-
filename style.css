@@ -172,7 +172,8 @@ body{letter-spacing:-.012em;text-rendering:optimizeLegibility}
 .portfolio-site .soft-section{background:#efede6}
 .portfolio-site .reveal{transform:translateY(10px);transition-duration:.45s}
 
-.portfolio-hero{min-height:760px;padding-bottom:68px}
+.portfolio-hero{min-height:min(760px,100svh);padding-bottom:68px}
+.portfolio-hero .hero-art img{object-position:center 76%}
 .portfolio-hero .hero-art:after{background:linear-gradient(90deg,rgba(25,31,27,.62),rgba(35,38,33,.16) 60%,rgba(35,38,33,.04))}
 .portfolio-hero .hero-content{padding-bottom:0}
 .portfolio-hero h1{max-width:620px;margin-bottom:16px;font:500 clamp(42px,5vw,56px)/1.08 var(--serif);letter-spacing:-.025em}
@@ -339,7 +340,8 @@ body{letter-spacing:-.012em;text-rendering:optimizeLegibility}
 
 @media (max-width:699px){
   .portfolio-site .section{padding:78px 24px}
-  .portfolio-hero{min-height:660px;padding:120px 24px 52px}
+  .portfolio-hero{min-height:min(660px,100svh);padding:120px 24px 52px}
+  .portfolio-hero .hero-art img{object-position:center center}
   .portfolio-hero h1{font-size:34px;white-space:nowrap}
   .portfolio-hero p:not(.eyebrow){font-size:15px}
   .portfolio-grid,.works-grid,.illustration-grid{grid-template-columns:1fr}
@@ -443,3 +445,78 @@ body{letter-spacing:-.012em;text-rendering:optimizeLegibility}
 }
 
 .journal-card .disabled-link{color:#aeb2ab}
+
+/* 계절 효과: 히어로의 창문 바깥 풍경 안에서만 보이도록 제한합니다. */
+.season-effects{position:absolute;z-index:0;inset:0;overflow:hidden;pointer-events:none}
+.season-window{position:absolute;top:0;left:0;width:64%;height:64%;overflow:hidden;clip-path:polygon(0 0,100% 0,100% 100%,75% 100%,75% 67%,0 67%)}
+.season-effect-layer{position:absolute;inset:0}
+.summer-effect-layer{overflow:hidden;isolation:isolate}
+.portfolio-hero[data-active-season="summer"] .summer-effect-layer::before,.portfolio-hero[data-active-season="summer"] .summer-effect-layer::after{content:"";position:absolute;pointer-events:none;mix-blend-mode:screen;opacity:.12;transform:translate3d(0,0,0) scale(.98);transform-origin:center;will-change:transform,opacity;animation:summerSunPulse 7s ease-in-out infinite}
+.portfolio-hero[data-active-season="summer"] .summer-effect-layer::before{z-index:0;top:8%;left:28%;width:76%;height:92%;background:conic-gradient(from 102deg at 2% 36%,rgba(255,250,226,0) 0deg,rgba(255,248,219,.06) 5deg,rgba(255,245,207,.28) 13deg,rgba(255,237,185,.5) 22deg,rgba(255,229,164,.3) 30deg,rgba(255,225,151,.07) 37deg,rgba(255,222,143,0) 43deg);-webkit-mask-image:radial-gradient(ellipse 112% 105% at 2% 36%,rgba(0,0,0,.48) 0%,#000 22%,#000 68%,rgba(0,0,0,.5) 85%,transparent 100%);mask-image:radial-gradient(ellipse 112% 105% at 2% 36%,rgba(0,0,0,.48) 0%,#000 22%,#000 68%,rgba(0,0,0,.5) 85%,transparent 100%);filter:blur(22px)}
+.portfolio-hero[data-active-season="summer"] .summer-effect-layer::after{z-index:1;top:64%;left:40%;width:58%;height:29%;border-radius:50%;background:radial-gradient(ellipse,rgba(255,244,199,.52) 0%,rgba(255,229,170,.28) 42%,rgba(255,220,139,.1) 64%,rgba(255,216,128,0) 86%);filter:blur(24px)}
+.autumn-effect-layer{-webkit-mask-image:linear-gradient(to right,transparent 0 4%,#000 4% 29%,transparent 29% 33%,#000 33% 58%,transparent 58%),linear-gradient(to bottom,transparent 0 3%,#000 3% 29%,transparent 29% 33%,#000 33% 62%,transparent 62%);-webkit-mask-composite:source-in;mask-image:linear-gradient(to right,transparent 0 4%,#000 4% 29%,transparent 29% 33%,#000 33% 58%,transparent 58%),linear-gradient(to bottom,transparent 0 3%,#000 3% 29%,transparent 29% 33%,#000 33% 62%,transparent 62%);mask-composite:intersect}
+.summer-sunlight-sparkle{position:absolute;z-index:2;top:var(--sparkle-top);left:var(--sparkle-left);width:calc(var(--sparkle-size) * 1.2);height:calc(var(--sparkle-size) * 1.2);border-radius:50%;background:radial-gradient(circle,rgba(255,253,230,.96) 0 13%,rgba(255,243,188,.66) 22% 39%,rgba(255,226,145,.24) 48% 62%,rgba(255,255,255,0) 76%);box-shadow:0 0 1.5px rgba(255,246,207,.68),0 0 4px rgba(255,224,150,.38);mix-blend-mode:screen;opacity:0;transform:translate3d(-2px,-2px,0) scale(.3) rotate(0deg);transform-origin:center;will-change:transform,opacity;animation:sunlightSparkle var(--sparkle-duration) ease-in-out var(--sparkle-delay) infinite}
+.summer-highlight-glint{position:absolute;z-index:3;top:var(--glint-top);left:var(--glint-left);width:calc(var(--glint-size) * .5);height:calc(var(--glint-size) * .5);border-radius:50%;background:radial-gradient(circle,rgba(255,255,242,1) 0 16%,rgba(255,244,193,.82) 17% 34%,rgba(255,224,145,.28) 48% 66%,transparent 76%);box-shadow:0 0 2px rgba(255,250,220,.9),0 0 5px rgba(255,223,143,.54);filter:drop-shadow(0 0 1.5px rgba(255,239,184,.55));mix-blend-mode:screen;opacity:0;transform:translate3d(-50%,-50%,0) scale(.25) rotate(-10deg);transform-origin:center;will-change:transform,opacity;animation:summerHighlightGlint var(--glint-duration) ease-in-out var(--glint-delay) infinite}
+.summer-highlight-glint::before,.summer-highlight-glint::after{content:"";position:absolute;pointer-events:none}
+.summer-highlight-glint::before{top:calc(50% - .5px);left:-55%;width:210%;height:1px;background:linear-gradient(90deg,transparent,rgba(255,252,225,.18) 18%,rgba(255,255,244,.95) 50%,rgba(255,237,181,.18) 82%,transparent)}
+.summer-highlight-glint::after{top:-55%;left:calc(50% - .5px);width:1px;height:210%;background:linear-gradient(180deg,transparent,rgba(255,248,209,.16) 18%,rgba(255,255,245,.92) 50%,rgba(255,230,166,.16) 82%,transparent)}
+.season-particle{position:absolute;display:block;width:var(--size);height:auto;opacity:0;will-change:transform,opacity;user-select:none}
+.spring-fall{position:absolute;top:var(--top);left:var(--left);width:var(--size);opacity:0;will-change:transform,opacity;animation:springFall var(--duration) cubic-bezier(.35,.05,.65,.95) var(--delay) forwards}
+.spring-petal{display:block;width:100%;height:auto;will-change:transform;user-select:none;animation:springSway var(--sway-duration) ease-in-out infinite alternate}
+.autumn-leaf{top:var(--top);left:var(--left);animation:fallRotate var(--duration) cubic-bezier(.25,.48,.38,1) var(--delay) forwards}
+.winter-snowflake{top:-7%;left:var(--left);animation:snow var(--duration) linear forwards}
+
+@keyframes springFall{
+  0%{opacity:0;transform:translate3d(0,-8px,0)}
+  12%{opacity:.66}
+  82%{opacity:.54}
+  100%{opacity:0;transform:translate3d(var(--drift),58vh,0)}
+}
+@keyframes springSway{
+  0%{transform:translate3d(calc(var(--sway) * -1),0,0) rotate(-15deg)}
+  50%{transform:translate3d(0,-2px,0) rotate(0deg)}
+  100%{transform:translate3d(var(--sway),1px,0) rotate(15deg)}
+}
+@keyframes summerSunPulse{
+  0%,100%{opacity:.12;transform:translate3d(0,0,0) scale(.98)}
+  50%{opacity:.42;transform:translate3d(0,0,0) scale(1.03)}
+}
+@keyframes sunlightSparkle{
+  0%,42%,58%,100%{opacity:0;transform:translate3d(-2px,-2px,0) scale(.3) rotate(0deg)}
+  47%{opacity:.18;transform:translate3d(-1px,-1px,0) scale(.72) rotate(7deg)}
+  50%{opacity:.72;transform:translate3d(.5px,.5px,0) scale(1.02) rotate(16deg)}
+  53%{opacity:.18;transform:translate3d(2px,1px,0) scale(.62) rotate(25deg)}
+}
+@keyframes summerHighlightGlint{
+  0%,41%,59%,100%{opacity:0;transform:translate3d(-50%,-50%,0) scale(.25) rotate(-10deg)}
+  46%{opacity:.16;transform:translate3d(-50%,-50%,0) scale(.62) rotate(-3deg)}
+  49%{opacity:.78;transform:translate3d(-50%,-50%,0) scale(1.08) rotate(5deg)}
+  51%{opacity:.96;transform:translate3d(-50%,-50%,0) scale(1) rotate(10deg)}
+  54%{opacity:.2;transform:translate3d(-50%,-50%,0) scale(.68) rotate(17deg)}
+}
+@keyframes fallRotate{
+  0%{opacity:0;transform:translate3d(0,-8px,0) rotate(var(--rotate-start))}
+  10%{opacity:.66}
+  82%{opacity:.55}
+  100%{opacity:0;transform:translate3d(0,62vh,0) rotate(var(--rotate-end))}
+}
+@keyframes snow{
+  0%{opacity:0;transform:translate3d(0,-6px,0) rotate(var(--rotate-start))}
+  14%{opacity:.64}
+  82%{opacity:.52}
+  100%{opacity:0;transform:translate3d(var(--drift),67vh,0) rotate(var(--rotate-end))}
+}
+
+@media (max-width:699px){
+  /* 세로 화면의 object-fit 잘림에 맞춘 창문 영역입니다. */
+  .season-window{width:72%;height:42%;clip-path:none}
+  .portfolio-hero[data-active-season="summer"] .summer-effect-layer::before{top:10%;left:31%;width:69%;height:84%}
+  .portfolio-hero[data-active-season="summer"] .summer-effect-layer::after{top:65%;left:38%;width:61%;height:27%}
+  .autumn-effect-layer{-webkit-mask-image:linear-gradient(to right,transparent 0 5%,#000 5% 30%,transparent 30% 35%,#000 35% 61%,transparent 61%),linear-gradient(to bottom,transparent 0 4%,#000 4% 30%,transparent 30% 35%,#000 35% 68%,transparent 68%);mask-image:linear-gradient(to right,transparent 0 5%,#000 5% 30%,transparent 30% 35%,#000 35% 61%,transparent 61%),linear-gradient(to bottom,transparent 0 4%,#000 4% 30%,transparent 30% 35%,#000 35% 68%,transparent 68%)}
+}
+
+@media (prefers-reduced-motion:reduce){
+  .season-effects{display:block}
+  .season-particle,.spring-fall,.spring-petal,.summer-sunlight-sparkle,.summer-highlight-glint{animation:none!important;opacity:0!important;transform:none!important}
+  .portfolio-hero[data-active-season="summer"] .summer-effect-layer::before,.portfolio-hero[data-active-season="summer"] .summer-effect-layer::after{animation:none!important;opacity:.12!important;transform:translate3d(0,0,0) scale(1)!important}
+}
