@@ -460,6 +460,8 @@ body{letter-spacing:-.012em;text-rendering:optimizeLegibility}
 .spring-effect-layer,.autumn-effect-layer,.winter-effect-layer{-webkit-mask-image:linear-gradient(to right,#000 0 29%,transparent 29% 33%,#000 33% 58%,transparent 58% 62%,#000 62% 100%);mask-image:linear-gradient(to right,#000 0 29%,transparent 29% 33%,#000 33% 58%,transparent 58% 62%,#000 62% 100%)}
 .summer-sunlight-sparkle{position:absolute;z-index:2;top:var(--sparkle-top);left:var(--sparkle-left);width:calc(var(--sparkle-size) * 1.2);height:calc(var(--sparkle-size) * 1.2);border-radius:50%;background:radial-gradient(circle,rgba(255,253,230,.96) 0 13%,rgba(255,243,188,.66) 22% 39%,rgba(255,226,145,.24) 48% 62%,rgba(255,255,255,0) 76%);box-shadow:0 0 1.5px rgba(255,246,207,.68),0 0 4px rgba(255,224,150,.38);mix-blend-mode:screen;opacity:0;transform:translate3d(-2px,-2px,0) scale(.3) rotate(0deg);transform-origin:center;will-change:transform,opacity;animation:sunlightSparkle var(--sparkle-duration) ease-in-out var(--sparkle-delay) infinite}
 .summer-highlight-glint{position:absolute;z-index:3;top:var(--glint-top);left:var(--glint-left);width:calc(var(--glint-size) * .5);height:calc(var(--glint-size) * .5);border-radius:50%;background:radial-gradient(circle,rgba(255,255,242,1) 0 16%,rgba(255,244,193,.82) 17% 34%,rgba(255,224,145,.28) 48% 66%,transparent 76%);box-shadow:0 0 2px rgba(255,250,220,.9),0 0 5px rgba(255,223,143,.54);filter:drop-shadow(0 0 1.5px rgba(255,239,184,.55));mix-blend-mode:screen;opacity:0;transform:translate3d(-50%,-50%,0) scale(.25) rotate(-10deg);transform-origin:center;will-change:transform,opacity;animation:summerHighlightGlint var(--glint-duration) ease-in-out var(--glint-delay) infinite}
+.summer-sunlight-sparkle.summer-flower-sparkle{width:calc(var(--sparkle-size) * 1.65);height:calc(var(--sparkle-size) * 1.65);box-shadow:0 0 2px rgba(255,253,225,.92),0 0 7px rgba(255,228,150,.64);animation-name:flowerSunlightSparkle}
+.summer-highlight-glint.summer-flower-sparkle{width:calc(var(--glint-size) * .72);height:calc(var(--glint-size) * .72);box-shadow:0 0 3px rgba(255,255,230,1),0 0 8px rgba(255,224,143,.78);filter:drop-shadow(0 0 2.5px rgba(255,241,181,.76));animation-name:flowerHighlightGlint}
 .summer-highlight-glint::before,.summer-highlight-glint::after{content:"";position:absolute;pointer-events:none}
 .summer-highlight-glint::before{top:calc(50% - .5px);left:-55%;width:210%;height:1px;background:linear-gradient(90deg,transparent,rgba(255,252,225,.18) 18%,rgba(255,255,244,.95) 50%,rgba(255,237,181,.18) 82%,transparent)}
 .summer-highlight-glint::after{top:-55%;left:calc(50% - .5px);width:1px;height:210%;background:linear-gradient(180deg,transparent,rgba(255,248,209,.16) 18%,rgba(255,255,245,.92) 50%,rgba(255,230,166,.16) 82%,transparent)}
@@ -496,6 +498,20 @@ body{letter-spacing:-.012em;text-rendering:optimizeLegibility}
   49%{opacity:.78;transform:translate3d(-50%,-50%,0) scale(1.08) rotate(5deg)}
   51%{opacity:.96;transform:translate3d(-50%,-50%,0) scale(1) rotate(10deg)}
   54%{opacity:.2;transform:translate3d(-50%,-50%,0) scale(.68) rotate(17deg)}
+}
+@keyframes flowerSunlightSparkle{
+  0%,38%,62%,100%{opacity:0;transform:translate3d(-2px,-2px,0) scale(.3) rotate(0deg)}
+  44%{opacity:.26;transform:translate3d(-1px,-1px,0) scale(.72) rotate(7deg)}
+  49%{opacity:.9;transform:translate3d(.5px,.5px,0) scale(1.06) rotate(14deg)}
+  52%{opacity:1;transform:translate3d(1px,.5px,0) scale(1) rotate(19deg)}
+  56%{opacity:.32;transform:translate3d(2px,1px,0) scale(.66) rotate(25deg)}
+}
+@keyframes flowerHighlightGlint{
+  0%,39%,61%,100%{opacity:0;transform:translate3d(-50%,-50%,0) scale(.25) rotate(-10deg)}
+  44%{opacity:.24;transform:translate3d(-50%,-50%,0) scale(.64) rotate(-3deg)}
+  48%{opacity:.9;transform:translate3d(-50%,-50%,0) scale(1.1) rotate(5deg)}
+  51%{opacity:1;transform:translate3d(-50%,-50%,0) scale(1.04) rotate(10deg)}
+  55%{opacity:.3;transform:translate3d(-50%,-50%,0) scale(.7) rotate(17deg)}
 }
 @keyframes fallRotate{
   0%{opacity:0;transform:translate3d(0,-8px,0) rotate(var(--rotate-start))}

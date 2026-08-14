@@ -207,6 +207,7 @@ class SummerEffect extends SeasonEffect {
     ].forEach((sparkle) => {
       const point = document.createElement('span');
       point.className = 'summer-sunlight-sparkle';
+      if (sparkle.top < 75) point.classList.add('summer-flower-sparkle');
       point.setAttribute('aria-hidden', 'true');
       const styles = {
         '--sparkle-top': `${sparkle.top}%`, '--sparkle-left': `${sparkle.left}%`,
@@ -244,6 +245,7 @@ class SummerEffect extends SeasonEffect {
     ].forEach((glint) => {
       const highlight = document.createElement('span');
       highlight.className = 'summer-highlight-glint';
+      if (glint.top < 75) highlight.classList.add('summer-flower-sparkle');
       highlight.setAttribute('aria-hidden', 'true');
       const styles = {
         '--glint-top': `${glint.top}%`, '--glint-left': `${glint.left}%`,
