@@ -372,6 +372,10 @@ body{letter-spacing:-.012em;text-rendering:optimizeLegibility}
   .artist-profile .artist-name{margin:30px 0 45px}
 }
 
+@media (min-width:600px) and (max-width:699px){
+  .works-grid{grid-template-columns:repeat(4,minmax(0,1fr))}
+}
+
 /* Beyond the Canvas archive */
 .beyond-hero .section-inner{max-width:900px}
 .beyond-hero h1{max-width:760px}
