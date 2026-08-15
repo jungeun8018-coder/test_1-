@@ -268,16 +268,20 @@ class SummerEffect extends SeasonEffect {
 
 class AutumnEffect extends SeasonEffect {
   start() {
-    [0, 2400, 5100].forEach((delay) => this.spawn(delay));
+    this.zone = Math.floor(this.random(0, 6));
+    [0, 1200, 2400, 3600, 4800, 6000].forEach((delay) => this.spawn(delay));
   }
 
   spawn(delay = 0) {
     const rotation = this.random(-90, 90);
     const duration = this.random(8, 14);
+    const zoneWidth = 100 / 6;
+    const left = this.zone * zoneWidth + this.random(2, zoneWidth - 2);
+    this.zone = (this.zone + 1) % 6;
     this.particle('autumn-leaf', {
-      '--size': `${this.random(7, 11)}px`,
-      '--top': `${this.random(2, 20)}%`,
-      '--left': `${this.random(8, 54)}%`,
+      '--size': `${this.random(10.5, 16.5)}px`,
+      '--top': `${this.random(-4, 10)}%`,
+      '--left': `${left}%`,
       '--duration': `${duration}s`,
       '--delay': `${delay}ms`,
       '--rotate-start': `${-rotation / 2}deg`,
@@ -289,21 +293,21 @@ class AutumnEffect extends SeasonEffect {
 
 class WinterEffect extends SeasonEffect {
   start() {
-    this.zone = Math.floor(this.random(0, 4));
-    [0, 900, 1800, 2700].forEach((delay) => this.schedule(() => this.spawn(), delay));
+    this.zone = Math.floor(this.random(0, 8));
+    [0, 450, 900, 1350, 1800, 2250, 2700, 3150].forEach((delay) => this.schedule(() => this.spawn(), delay));
   }
 
   spawn() {
-    if (this.root.querySelectorAll('.winter-snowflake').length >= 4) {
+    if (this.root.querySelectorAll('.winter-snowflake').length >= 8) {
       this.schedule(() => this.spawn(), this.random(2000, 5000));
       return;
     }
     const rotation = this.random(-30, 30);
-    const zoneWidth = 21;
-    const left = 5 + this.zone * zoneWidth + this.random(2, zoneWidth - 3);
-    this.zone = (this.zone + 1) % 4;
+    const zoneWidth = 12.5;
+    const left = this.zone * zoneWidth + this.random(1.5, zoneWidth - 1.5);
+    this.zone = (this.zone + 1) % 8;
     this.particle('winter-snowflake', {
-      '--size': `${this.random(5, 10)}px`,
+      '--size': `${this.random(7.5, 15)}px`,
       '--left': `${left}%`,
       '--duration': `${this.random(13, 18)}s`,
       '--drift': `${this.random(-2, 2)}vw`,
