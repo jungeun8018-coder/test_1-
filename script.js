@@ -303,7 +303,7 @@ class WinterEffect extends SeasonEffect {
       return;
     }
     const rotation = this.random(-30, 30);
-    const zoneWidth = 12.5;
+    const zoneWidth = 11;
     const left = this.zone * zoneWidth + this.random(1.5, zoneWidth - 1.5);
     this.zone = (this.zone + 1) % 8;
     this.particle('winter-snowflake', {
