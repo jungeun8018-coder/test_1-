@@ -207,12 +207,16 @@ class SummerEffect extends SeasonEffect {
     ].forEach((sparkle) => {
       const point = document.createElement('span');
       point.className = 'summer-sunlight-sparkle';
-      if (sparkle.top < 75) point.classList.add('summer-flower-sparkle');
+      const isFlowerSparkle = sparkle.top < 75;
+      const sunlightProgress = Math.max(0, Math.min(1, (sparkle.top - 42) / 54));
+      const sequenceDelay = -.45 + sunlightProgress * 1.6 + sparkle.delay * .08;
+      if (isFlowerSparkle) point.classList.add('summer-flower-sparkle');
+      point.dataset.sparkleStage = isFlowerSparkle ? 'flowers' : 'table';
       point.setAttribute('aria-hidden', 'true');
       const styles = {
         '--sparkle-top': `${sparkle.top}%`, '--sparkle-left': `${sparkle.left}%`,
         '--sparkle-size': `${sparkle.size}px`, '--sparkle-duration': `${sparkle.duration}s`,
-        '--sparkle-delay': `${sparkle.delay}s`,
+        '--sparkle-delay': `${sequenceDelay.toFixed(2)}s`,
       };
       Object.entries(styles).forEach(([name, value]) => point.style.setProperty(name, value));
       this.root.append(point);
@@ -245,12 +249,16 @@ class SummerEffect extends SeasonEffect {
     ].forEach((glint) => {
       const highlight = document.createElement('span');
       highlight.className = 'summer-highlight-glint';
-      if (glint.top < 75) highlight.classList.add('summer-flower-sparkle');
+      const isFlowerGlint = glint.top < 75;
+      const sunlightProgress = Math.max(0, Math.min(1, (glint.top - 43) / 52));
+      const sequenceDelay = -.38 + sunlightProgress * 1.5 + glint.delay * .06;
+      if (isFlowerGlint) highlight.classList.add('summer-flower-sparkle');
+      highlight.dataset.sparkleStage = isFlowerGlint ? 'flowers' : 'table';
       highlight.setAttribute('aria-hidden', 'true');
       const styles = {
         '--glint-top': `${glint.top}%`, '--glint-left': `${glint.left}%`,
         '--glint-size': `${glint.size}px`, '--glint-duration': `${glint.duration}s`,
-        '--glint-delay': `${glint.delay}s`,
+        '--glint-delay': `${sequenceDelay.toFixed(2)}s`,
       };
       Object.entries(styles).forEach(([name, value]) => highlight.style.setProperty(name, value));
       this.root.append(highlight);
