@@ -547,3 +547,7 @@ body{letter-spacing:-.012em;text-rendering:optimizeLegibility}
 
 .program-detail[id]{scroll-margin-top:110px}
 .program-apply-button{margin-top:28px}
+@media (min-width:700px){
+  .program-detail:has(.program-apply-button){position:relative;padding-bottom:132px}
+  .program-detail:has(.program-apply-button) .program-apply-button{position:absolute;bottom:60px;left:0;margin-top:0}
+}
