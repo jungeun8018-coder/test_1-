@@ -400,20 +400,25 @@ function initSeasonEffects() {
     if (!reducedMotion.matches) rotationTimer = window.setTimeout(showNextSeason, delay);
   };
 
-  const showNextSeason = async () => {
-    if (isChanging || reducedMotion.matches) return;
+  const changeSeason = async (offset, isManual = false) => {
+    if (isChanging || (!isManual && reducedMotion.matches)) return;
     isChanging = true;
-    const nextIndex = (validSeasons.indexOf(activeSeason) + 1) % validSeasons.length;
+    window.clearTimeout(rotationTimer);
+    const nextIndex = (validSeasons.indexOf(activeSeason) + offset + validSeasons.length) % validSeasons.length;
     const nextSeason = validSeasons[nextIndex];
     await loadSeasonImage(hiddenImage, nextSeason);
     setActiveSeason(nextSeason);
     hiddenImage.classList.add('season-image-ready');
     visibleImage.classList.remove('season-image-ready');
-    await new Promise((resolve) => window.setTimeout(resolve, transitionDuration));
+    if (!reducedMotion.matches) {
+      await new Promise((resolve) => window.setTimeout(resolve, transitionDuration));
+    }
     [visibleImage, hiddenImage] = [hiddenImage, visibleImage];
     isChanging = false;
-    scheduleNextSeason(seasonDuration - transitionDuration);
+    scheduleNextSeason(isManual ? seasonDuration : seasonDuration - transitionDuration);
   };
+
+  const showNextSeason = () => changeSeason(1);
 
   const startSeasonRotation = async () => {
     await loadSeasonImage(visibleImage, activeSeason);
@@ -433,8 +438,10 @@ function initSeasonEffects() {
   });
 
   hero.addEventListener('click', (event) => {
-    if (event.target instanceof Element && event.target.closest('.hero-content')) return;
-    showNextSeason();
+    if (event.target instanceof Element && event.target.closest('a, button, input, textarea, select, label, [role="button"]')) return;
+    const heroBounds = hero.getBoundingClientRect();
+    const direction = event.clientX < heroBounds.left + heroBounds.width / 2 ? -1 : 1;
+    changeSeason(direction, true);
   });
 
   startSeasonRotation();
