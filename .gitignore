@@ -1,1 +1,12 @@
 .edge-test/
+
+# Next.js
+node_modules/
+.pnpm-store/
+.next/
+out/
+coverage/
+*.tsbuildinfo
+next-env.d.ts
+.env*
+!.env.example
