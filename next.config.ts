@@ -25,6 +25,7 @@ const redirects: Record<string, string> = {
 
 const nextConfig: NextConfig = {
   typedRoutes: true,
+  allowedDevOrigins: ["192.168.35.175"],
   async redirects() {
     return Object.entries(redirects).map(([source, destination]) => ({
       source,

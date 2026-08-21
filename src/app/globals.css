@@ -924,3 +924,22 @@ body{letter-spacing:-.012em;text-rendering:optimizeLegibility}
 body>.portfolio-site{min-height:1px}
 body>.portfolio-site.program-detail-site,
 body>.portfolio-site.shop-site{background:#faf6f0}
+
+/* Contact 페이지 문의 폼 */
+.contact-form-section h2{margin-bottom:14px;font-size:clamp(26px,4vw,32px)}
+.contact-form-section .section-inner>p{margin-bottom:38px;color:#59605a}
+.contact-form-actions{display:flex;flex-wrap:wrap;align-items:center;gap:16px;margin-top:6px}
+.contact-form-actions .button{min-width:150px}
+.contact-form-actions .button:disabled{opacity:.6;cursor:wait}
+#contact-form-status[data-state="success"]{color:var(--sage-dark);font-weight:600}
+#contact-form-status[data-state="error"]{color:#a3453a;font-weight:600}
+
+/* Program detail inquiry forms */
+.program-inquiry-toggle{border-top:0;border-right:0;border-left:0;background:transparent;cursor:pointer;font-family:inherit}
+.program-inquiry-form{display:grid;gap:18px;max-width:720px;margin-top:32px;padding:30px;background:rgba(255,255,255,.48);border:1px solid var(--line)}
+.program-inquiry-form[hidden]{display:none}
+.program-inquiry-form .button{margin-top:4px}
+.program-inquiry-status{margin:12px 0 0}
+.program-inquiry-status[data-state="success"]{color:var(--sage-dark);font-weight:600}
+.program-inquiry-status[data-state="error"]{color:#a3453a;font-weight:600}
+@media (min-width:700px){.program-inquiry-form{grid-template-columns:1fr 1fr}.program-inquiry-form .full{grid-column:1/-1}}

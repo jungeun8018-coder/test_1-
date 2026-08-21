@@ -448,3 +448,97 @@ function initSeasonEffects() {
 }
 
 initSeasonEffects();
+
+// Contact 페이지 문의 폼: 새로고침 없이 /api/contact로 전송합니다.
+const contactForm = document.getElementById('contact-form');
+const contactStatus = document.getElementById('contact-form-status');
+
+contactForm?.addEventListener('submit', async (event) => {
+  event.preventDefault();
+
+  const submitButton = contactForm.querySelector('button[type="submit"]');
+  const formData = new FormData(contactForm);
+  const payload = {
+    name: formData.get('name'),
+    email: formData.get('email'),
+    message: formData.get('message')
+  };
+
+  submitButton.disabled = true;
+  contactStatus.removeAttribute('data-state');
+  contactStatus.textContent = '전송 중입니다...';
+
+  try {
+    const response = await fetch('/api/contact', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    const result = await response.json();
+
+    if (!response.ok) throw new Error(result.error || '전송에 실패했습니다.');
+
+    contactStatus.dataset.state = 'success';
+    contactStatus.textContent = '문의가 전송되었습니다. 빠른 시일 내에 답변드리겠습니다.';
+    contactForm.reset();
+  } catch (error) {
+    contactStatus.dataset.state = 'error';
+    contactStatus.textContent = error instanceof Error ? error.message : '전송 중 오류가 발생했습니다.';
+  } finally {
+    submitButton.disabled = false;
+  }
+});
+
+// 프로그램 상세 페이지 신청 폼: Resend API 전송 후 프로그램 목록으로 돌아갑니다.
+document.querySelectorAll('.program-inquiry-toggle').forEach((toggle) => {
+  toggle.addEventListener('click', () => {
+    const form = toggle.nextElementSibling;
+    if (!(form instanceof HTMLFormElement)) return;
+    const willOpen = form.hidden;
+    form.hidden = !willOpen;
+    toggle.setAttribute('aria-expanded', String(willOpen));
+    if (willOpen) form.querySelector('input')?.focus();
+  });
+});
+
+document.querySelectorAll('.program-inquiry-form').forEach((form) => {
+  form.addEventListener('submit', async (event) => {
+    event.preventDefault();
+
+    const submitButton = form.querySelector('button[type="submit"]');
+    const status = form.querySelector('.program-inquiry-status');
+    if (!(submitButton instanceof HTMLButtonElement) || !(status instanceof HTMLElement)) return;
+
+    const formData = new FormData(form);
+    const program = form.dataset.program || '';
+    const payload = {
+      name: formData.get('name'),
+      email: formData.get('email'),
+      program,
+      message: `안녕하세요. ${program} 프로그램 신청을 문의드립니다.\n\n이름: ${String(formData.get('name') || '').trim()}\n연락처: ${String(formData.get('phone') || '').trim()}\n희망 시기: ${String(formData.get('preferredTime') || '').trim()}`
+    };
+
+    submitButton.disabled = true;
+    status.removeAttribute('data-state');
+    status.textContent = '전송 중입니다...';
+
+    try {
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.error || '전송에 실패했습니다.');
+
+      status.dataset.state = 'success';
+      status.textContent = '메일이 성공적으로 전송되었습니다.';
+      form.reset();
+      window.setTimeout(() => window.location.assign('/programs'), 1800);
+    } catch (error) {
+      status.dataset.state = 'error';
+      status.textContent = error instanceof Error ? error.message : '전송 중 오류가 발생했습니다.';
+      submitButton.disabled = false;
+    }
+  });
+});

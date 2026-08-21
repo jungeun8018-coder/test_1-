@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Script from "next/script";
 import { Cormorant_Garamond, Noto_Sans_KR } from "next/font/google";
 
 import { SiteFooter } from "@/components/SiteFooter";
@@ -33,7 +32,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         <SiteHeader />
         {children}
         <SiteFooter />
-        <Script src="/site.js" strategy="afterInteractive" />
+        <script src="/site.js" defer />
       </body>
     </html>
   );
