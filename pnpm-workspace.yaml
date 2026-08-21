@@ -1,0 +1,4 @@
+nodeLinker: hoisted
+confirmModulesPurge: false
+allowBuilds:
+  unrs-resolver: false
