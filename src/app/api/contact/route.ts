@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { Resend } from "resend";
 
+import { getSupabaseAdminClient } from "@/lib/supabase-admin";
+
 // 문의를 받을 이메일 주소.
 // Resend는 도메인을 인증하기 전(onboarding@resend.dev로 발신하는 테스트 단계)에는
 // Resend 가입 이메일로만 발송을 허용합니다. 도메인을 인증한 뒤에는
@@ -23,6 +25,16 @@ const PROGRAM_NAMES = new Set([
   "나만의 엽서",
   "나만의 탁상용 캘린더 만들기"
 ]);
+
+// program_inquiries 테이블의 program 컬럼은 CHECK 제약조건으로
+// 'seasonal' | 'postcard' | 'calendar' | 'community' | 'general' 값만 허용합니다.
+// 신청폼(site.js)은 화면에 보이는 한글 프로그램명을 그대로 보내오므로,
+// Supabase에 저장할 때는 이 슬러그 값으로 변환해서 넣어야 합니다.
+const PROGRAM_SLUGS: Record<string, string> = {
+  "취향한점": "seasonal",
+  "나만의 엽서": "postcard",
+  "나만의 탁상용 캘린더 만들기": "calendar"
+};
 
 function isNonEmptyString(value: unknown): value is string {
   return typeof value === "string" && value.trim().length > 0;
@@ -88,7 +100,48 @@ export async function POST(request: Request) {
       );
     }
 
-    return NextResponse.json({ ok: true });
+    // 이메일 발송 성공 이후 Supabase 저장을 시도합니다.
+    // program_inquiries 테이블은 program 컬럼이 NOT NULL + CHECK 제약(허용 슬러그 값)이므로,
+    // 프로그램 신청 폼(program 값이 있는 경우)에서만, 슬러그로 변환해서 저장합니다.
+    // 저장이 실패하더라도 이메일은 이미 발송되었으므로 사용자에게는 성공으로 응답하되,
+    // 실패 사실이 조용히 묻히지 않도록 응답의 supabaseSaved 플래그와 서버 로그에 남깁니다.
+    let supabaseSaved = false;
+    if (programName) {
+      const supabase = getSupabaseAdminClient();
+      if (!supabase) {
+        console.error(
+          "[program_inquiries] Supabase 클라이언트를 생성하지 못해 INSERT를 건너뜁니다. " +
+            "SUPABASE_URL / SUPABASE_SERVICE_ROLE_KEY 환경변수를 확인하세요."
+        );
+      } else {
+        const insertPayload = {
+          name: name.trim(),
+          email: email.trim(),
+          program: PROGRAM_SLUGS[programName] ?? programName,
+          message: message.trim()
+        };
+
+        console.log("[program_inquiries] INSERT 시도:", insertPayload);
+
+        const { data: insertedRow, error: insertError } = await supabase
+          .from("program_inquiries")
+          .insert(insertPayload)
+          .select()
+          .single();
+
+        if (insertError) {
+          console.error(
+            "[program_inquiries] Supabase 저장 실패:",
+            JSON.stringify(insertError, null, 2)
+          );
+        } else {
+          supabaseSaved = true;
+          console.log("[program_inquiries] Supabase 저장 성공:", insertedRow);
+        }
+      }
+    }
+
+    return NextResponse.json({ ok: true, supabaseSaved });
   } catch (err) {
     console.error("Resend 호출 중 오류:", err);
     return NextResponse.json(
