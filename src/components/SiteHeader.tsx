@@ -7,7 +7,6 @@ import { FullReloadLink } from "@/components/FullReloadLink";
 const navigation = [
   { href: "/", label: "Home", active: ["/"] },
   { href: "/about", label: "About", active: ["/about"] },
-  { href: "/artist", label: "Artist", active: ["/artist"] },
   { href: "/works", label: "Works", active: ["/works", "/gallery", "/illustration"] },
   { href: "/programs", label: "Programs", active: ["/programs"] },
   { href: "/shop", label: "Shop", active: ["/shop"] },

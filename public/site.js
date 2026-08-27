@@ -86,6 +86,169 @@ if (lightboxTriggers.length) {
   });
 }
 
+/* 히어로 창문 영역 계산
+   배경 사진 속 실제 창문(유리) 범위를 이미지 원본 기준 비율(0~1)로 적어두고,
+   화면 크기·object-fit:cover 크롭에 맞춰 매번 컨테이너 기준 %로 다시 계산합니다.
+   이렇게 하면 벚꽃·낙엽·눈이 벽/창틀이 아니라 실제 창문 유리 위에서만 보입니다.
+
+   봄·가을·겨울 배경은 서로 다른 이미지라 창틀 문살의 개수·위치가 실제로 다르고,
+   카메라 원근감 때문에 문살이 완전한 수평/수직이 아니라 살짝 기울어져 있습니다
+   (예: 가을 사진의 첫 번째 가로 문살은 왼쪽 끝과 오른쪽 끝의 높이 차이가 이미지에서
+   약 100px에 달함). 그래서 문살 하나하나를 "창문 박스의 왼쪽 끝 위치 → 오른쪽 끝 위치"
+   (가로 문살, rowLines) 또는 "위쪽 끝 위치 → 아래쪽 끝 위치"(세로 문살, colLines)의
+   직선으로 측정해서 저장하고, 그 사이 지점은 선형 보간으로 계산합니다. margin은
+   문살 선을 기준으로 위아래(또는 좌우)로 얼마나 여유를 두고 잘라낼지(%)입니다. */
+const SEASON_WINDOW_CONFIG = {
+  spring: {
+    rect: { left: 0.013, top: 0.0098, right: 0.612, bottom: 0.586 },
+    rowLines: [{ atLeft: 29.2, atRight: 33.1 }, { atLeft: 68.7, atRight: 73.4 }],
+    colLines: [{ atTop: 32.6, atBottom: 31.7 }, { atTop: 57, atBottom: 56 }, { atTop: 79.3, atBottom: 78.3 }],
+    margin: { row: 5, col: 4 }
+  },
+  autumn: {
+    rect: { left: 0.0098, top: 0.0146, right: 0.628, bottom: 0.5127 },
+    rowLines: [{ atLeft: 0, atRight: 19 }, { atLeft: 66.3, atRight: 74.7 }],
+    colLines: [{ atTop: 25.6, atBottom: 24.2 }, { atTop: 53.7, atBottom: 51.6 }, { atTop: 77.4, atBottom: 74.7 }],
+    margin: { row: 5, col: 4 }
+  },
+  winter: {
+    rect: { left: 0.013, top: 0.0098, right: 0.586, bottom: 0.4785 },
+    rowLines: [{ atLeft: 38.6, atRight: 42.1 }],
+    colLines: [{ atTop: 32.3, atBottom: 30.1 }, { atTop: 61.1, atBottom: 58.3 }],
+    margin: { row: 5, col: 4 }
+  }
+};
+
+function parseObjectPosition(value) {
+  const parts = String(value || '').split(' ').map(parseFloat);
+  const x = Number.isFinite(parts[0]) ? parts[0] : 50;
+  const y = Number.isFinite(parts[1]) ? parts[1] : 50;
+  return { x, y };
+}
+
+/* object-fit:cover가 이미지를 컨테이너에 맞춰 확대/크롭하는 계산을 그대로 따라가서,
+   이미지 원본 비율 좌표(rect)를 현재 컨테이너 기준 좌표로 변환합니다.
+   rectPx*는 화면 밖으로 나가도 그대로 두는(클램프하지 않은) 값이고, left/top/width/height(%)는
+   실제로 화면에 보이는 만큼만 잘라낸(0~100% 클램프) 값입니다 — 창문 박스 div의 CSS
+   위치/크기에는 클램프된 값을 쓰지만, 그 안의 문살 격자(clip-path)는 클램프되지 않은
+   rectPx를 기준으로 계산해야 창문이 화면 가장자리에서 잘려도 비율이 틀어지지 않습니다. */
+function coverRectToContainerPercent(rect, containerWidth, containerHeight, naturalWidth, naturalHeight, posX, posY) {
+  const scale = Math.max(containerWidth / naturalWidth, containerHeight / naturalHeight);
+  const offsetX = (containerWidth - naturalWidth * scale) * (posX / 100);
+  const offsetY = (containerHeight - naturalHeight * scale) * (posY / 100);
+  const rectLeftPx = offsetX + rect.left * naturalWidth * scale;
+  const rectTopPx = offsetY + rect.top * naturalHeight * scale;
+  const rectRightPx = offsetX + rect.right * naturalWidth * scale;
+  const rectBottomPx = offsetY + rect.bottom * naturalHeight * scale;
+  const leftPx = Math.max(0, rectLeftPx);
+  const topPx = Math.max(0, rectTopPx);
+  const rightPx = Math.min(containerWidth, rectRightPx);
+  const bottomPx = Math.min(containerHeight, rectBottomPx);
+  return {
+    left: (leftPx / containerWidth) * 100,
+    top: (topPx / containerHeight) * 100,
+    width: ((rightPx - leftPx) / containerWidth) * 100,
+    height: ((bottomPx - topPx) / containerHeight) * 100,
+    originXPx: leftPx,
+    originYPx: topPx,
+    rectLeftPx, rectTopPx, rectRightPx, rectBottomPx
+  };
+}
+
+/* 가로 문살 선(atLeft/atRight)을 창문 박스 안 임의의 x(0~100%) 위치에서의 y(%)로
+   선형 보간합니다. */
+function rowLineYAt(line, xPct) {
+  return line.atLeft + (line.atRight - line.atLeft) * (xPct / 100);
+}
+
+/* y = row(x), x = col(y)인 두 직선의 교점을 구합니다. 이미지의 원근 때문에
+   가로·세로 문살이 모두 기울어져 있으므로 각 유리 칸의 네 모서리마다 필요합니다. */
+function intersectWindowLines(row, col) {
+  const rowSlope = (row.atRight - row.atLeft) / 100;
+  const colSlope = (col.atBottom - col.atTop) / 100;
+  const denominator = 1 - rowSlope * colSlope;
+  if (Math.abs(denominator) < Number.EPSILON) return null;
+
+  const x = (col.atTop + colSlope * row.atLeft) / denominator;
+  const y = rowLineYAt(row, x);
+  return Number.isFinite(x) && Number.isFinite(y) ? { x, y } : null;
+}
+
+/* 창문 안 유리 칸(문살로 나뉜 낱장 유리) 하나하나를, 기울어진 문살 선을 반영한
+   사다리꼴로 잘라내는 clip-path: path(...) 문자열을 만듭니다.
+   - rowLines/colLines: 계절별로 측정한 문살 선 목록. atLeft/atRight(또는 atTop/atBottom)는
+     "창문 전체 범위(rect)"의 왼쪽 끝/오른쪽 끝(또는 위쪽 끝/아래쪽 끝)에서 문살의 위치를
+     rect 기준 %로 나타낸 값입니다 — 화면에 실제로 그려지는(잘릴 수 있는) 창문 박스가
+     아니라 항상 rect 전체를 기준으로 삼아야, 화면 가장자리에서 rect 일부가 잘려나가도
+     (아래 rectLeftPx 등이 컨테이너 밖으로 나가는 음수/초과값이 되어도) 안쪽 문살 위치가
+     비율이 틀어지지 않고 정확히 유지됩니다.
+   - margin: 문살 선 주위로 얼마나 여유 있게 잘라낼지(rect 기준 %).
+   - rectLeftPx/rectTopPx/rectRightPx/rectBottomPx: rect(창문 전체 범위)가 컨테이너 안에서
+     차지하는 실제 픽셀 좌표(화면 밖으로 나가도 클램프하지 않은 값).
+   - originXPx/originYPx: 실제로 화면에 그려지는(클램프된) 창문 박스의 좌상단 컨테이너 픽셀
+     좌표 — clip-path는 이 박스 요소 기준 좌표계이므로 여기서 빼서 박스 로컬 좌표로 바꿉니다. */
+function buildWindowPaneClipPath(rowLines, colLines, margin, rectLeftPx, rectTopPx, rectRightPx, rectBottomPx, originXPx, originYPx) {
+  const rectWidthPx = rectRightPx - rectLeftPx;
+  const rectHeightPx = rectBottomPx - rectTopPx;
+  // (u%, v%)는 rect 기준 0~100% 좌표입니다. 박스가 화면 가장자리에서 잘려도 rect 자체의
+  // 가로세로 비율은 절대 왜곡되지 않으므로, 문살 위치가 항상 정확하게 유지됩니다.
+  const toBoxLocalPx = (uPct, vPct) => ({
+    x: rectLeftPx + (uPct / 100) * rectWidthPx - originXPx,
+    y: rectTopPx + (vPct / 100) * rectHeightPx - originYPx
+  });
+  // 문살 선 목록 앞뒤에 창문 박스 자체의 위/아래(또는 좌/우) 가장자리를 경계로 추가합니다.
+  // 박스 가장자리는 문살이 아니므로 margin을 적용하지 않습니다.
+  const rowBoundaries = [
+    { line: { atLeft: 0, atRight: 0 }, margin: 0 },
+    ...rowLines.map((line) => ({ line, margin: margin.row })),
+    { line: { atLeft: 100, atRight: 100 }, margin: 0 }
+  ];
+  const colBoundaries = [
+    { line: { atTop: 0, atBottom: 0 }, margin: 0 },
+    ...colLines.map((line) => ({ line, margin: margin.col })),
+    { line: { atTop: 100, atBottom: 100 }, margin: 0 }
+  ];
+
+  const subpaths = [];
+  for (let r = 0; r < rowBoundaries.length - 1; r += 1) {
+    const top = rowBoundaries[r];
+    const bottom = rowBoundaries[r + 1];
+    // 문살 선 쪽으로는 margin만큼 안쪽으로 당겨서(유리 칸을 작게) 창틀에 걸치지 않게 합니다.
+    const topLine = { atLeft: top.line.atLeft + top.margin, atRight: top.line.atRight + top.margin };
+    const bottomLine = { atLeft: bottom.line.atLeft - bottom.margin, atRight: bottom.line.atRight - bottom.margin };
+    if (rowLineYAt(topLine, 0) >= rowLineYAt(bottomLine, 0) && rowLineYAt(topLine, 100) >= rowLineYAt(bottomLine, 100)) continue;
+
+    for (let c = 0; c < colBoundaries.length - 1; c += 1) {
+      const left = colBoundaries[c];
+      const right = colBoundaries[c + 1];
+      const leftLine = { atTop: left.line.atTop + left.margin, atBottom: left.line.atBottom + left.margin };
+      const rightLine = { atTop: right.line.atTop - right.margin, atBottom: right.line.atBottom - right.margin };
+
+      const topLeft = intersectWindowLines(topLine, leftLine);
+      const topRight = intersectWindowLines(topLine, rightLine);
+      const bottomRight = intersectWindowLines(bottomLine, rightLine);
+      const bottomLeft = intersectWindowLines(bottomLine, leftLine);
+      if (!topLeft || !topRight || !bottomRight || !bottomLeft) continue;
+      if (
+        topLeft.x >= topRight.x || bottomLeft.x >= bottomRight.x ||
+        topLeft.y >= bottomLeft.y || topRight.y >= bottomRight.y
+      ) continue;
+
+      const p1 = toBoxLocalPx(topLeft.x, topLeft.y);
+      const p2 = toBoxLocalPx(topRight.x, topRight.y);
+      const p3 = toBoxLocalPx(bottomRight.x, bottomRight.y);
+      const p4 = toBoxLocalPx(bottomLeft.x, bottomLeft.y);
+      subpaths.push(
+        `M${p1.x.toFixed(1)} ${p1.y.toFixed(1)} ` +
+        `L${p2.x.toFixed(1)} ${p2.y.toFixed(1)} ` +
+        `L${p3.x.toFixed(1)} ${p3.y.toFixed(1)} ` +
+        `L${p4.x.toFixed(1)} ${p4.y.toFixed(1)} Z`
+      );
+    }
+  }
+  return `path('${subpaths.join(' ')}')`;
+}
+
 /* 히어로 창문용 계절 효과 공통 컴포넌트 */
 class SeasonEffect {
   constructor(root, { enabled = false, asset = '' } = {}) {
@@ -131,16 +294,18 @@ class SeasonEffect {
 
 class SpringEffect extends SeasonEffect {
   start() {
-    [0, 1300, 2700, 4200, 5900].forEach((delay) => this.spawn(delay));
+    /* 시작 시점이 기계적으로 반복되는 느낌이 들지 않도록 각 시작 지연에 약간의 흔들림을 줍니다. */
+    [0, 1300, 2700, 4200, 5900].forEach((delay) => this.spawn(delay + this.random(0, 500)));
   }
 
   spawn(delay = 0) {
-    if (this.root.querySelectorAll('.spring-fall').length >= 6) {
+    if (this.root.querySelectorAll('.spring-fall').length >= 5) {
       this.schedule(() => this.spawn(), this.random(1800, 3200));
       return;
     }
     const duration = this.random(9, 12);
     const direction = Math.random() < .5 ? -1 : 1;
+    const rotationSpread = this.random(10, 22);
     const fall = document.createElement('span');
     fall.className = 'spring-fall';
     const styles = {
@@ -152,6 +317,9 @@ class SpringEffect extends SeasonEffect {
       '--drift': `${this.random(1.5, 4) * direction}vw`,
       '--sway': `${this.random(1.2, 3.2)}vw`,
       '--sway-duration': `${this.random(2.8, 4.8)}s`,
+      /* 회전 방향과 폭을 꽃잎마다 다르게 줘서 같은 동작이 반복되지 않도록 합니다. */
+      '--rotate-start': `${-rotationSpread / 2 * direction}deg`,
+      '--rotate-end': `${rotationSpread * direction}deg`,
     };
     Object.entries(styles).forEach(([name, value]) => fall.style.setProperty(name, value));
     const petal = document.createElement('img');
@@ -269,12 +437,13 @@ class SummerEffect extends SeasonEffect {
 class AutumnEffect extends SeasonEffect {
   start() {
     this.zone = Math.floor(this.random(0, 6));
-    [0, 1200, 2400, 3600, 4800, 6000].forEach((delay) => this.spawn(delay));
+    [0, 1200, 2400, 3600, 4800, 6000].forEach((delay) => this.spawn(delay + this.random(0, 500)));
   }
 
   spawn(delay = 0) {
     const rotation = this.random(-90, 90);
     const duration = this.random(8, 14);
+    const direction = Math.random() < .5 ? -1 : 1;
     const zoneWidth = 100 / 6;
     const left = this.zone * zoneWidth + this.random(2, zoneWidth - 2);
     this.zone = (this.zone + 1) % 6;
@@ -284,6 +453,8 @@ class AutumnEffect extends SeasonEffect {
       '--left': `${left}%`,
       '--duration': `${duration}s`,
       '--delay': `${delay}ms`,
+      /* 벚꽃보다 좌우로 더 흔들리며 떨어지도록 drift 폭을 크게 줍니다. */
+      '--drift': `${this.random(3.5, 7) * direction}vw`,
       '--rotate-start': `${-rotation / 2}deg`,
       '--rotate-end': `${rotation}deg`,
     });
@@ -294,7 +465,7 @@ class AutumnEffect extends SeasonEffect {
 class WinterEffect extends SeasonEffect {
   start() {
     this.zone = Math.floor(this.random(0, 8));
-    [0, 450, 900, 1350, 1800, 2250, 2700, 3150].forEach((delay) => this.schedule(() => this.spawn(), delay));
+    [0, 450, 900, 1350, 1800, 2250, 2700, 3150].forEach((delay) => this.schedule(() => this.spawn(), delay + this.random(0, 300)));
   }
 
   spawn() {
@@ -371,9 +542,61 @@ function initSeasonEffects() {
   const seasonDuration = 8000;
   const transitionDuration = 1000;
 
+  const heroArt = hero.querySelector('.hero-art');
+
+  /* 현재 계절 배경 이미지의 실제 크롭 상태를 기준으로 창문(.season-window) 위치를
+     다시 계산합니다. 데스크톱/모바일뿐 아니라 창 크기가 바뀔 때마다 다시 불러서,
+     object-fit:cover로 이미지가 어떻게 잘리든 창문 영역이 항상 정확히 따라오게 합니다. */
+  const updateWindowRect = () => {
+    const config = SEASON_WINDOW_CONFIG[activeSeason];
+    if (!config || !heroArt) {
+      windowArea.style.display = 'none';
+      return;
+    }
+    const containerWidth = heroArt.clientWidth;
+    const containerHeight = heroArt.clientHeight;
+    const naturalWidth = visibleImage.naturalWidth || 1536;
+    const naturalHeight = visibleImage.naturalHeight || 1024;
+    if (!containerWidth || !containerHeight || !naturalWidth || !naturalHeight) return;
+    const { x: posX, y: posY } = parseObjectPosition(getComputedStyle(visibleImage).objectPosition);
+    const box = coverRectToContainerPercent(config.rect, containerWidth, containerHeight, naturalWidth, naturalHeight, posX, posY);
+    if (box.width <= 0 || box.height <= 0) {
+      windowArea.style.display = 'none';
+      return;
+    }
+    windowArea.style.display = '';
+    windowArea.style.left = `${box.left}%`;
+    windowArea.style.top = `${box.top}%`;
+    windowArea.style.width = `${box.width}%`;
+    windowArea.style.height = `${box.height}%`;
+
+    /* 문살 격자는 클램프되지 않은 rect 픽셀 좌표를 기준으로 계산합니다(위 coverRectToContainerPercent
+       설명 참고) — 창문이 화면 가장자리에서 잘려도 가로세로 비율이 왜곡되지 않아, 문살 위치가
+       항상 정확히 맞습니다. */
+    const clipPath = buildWindowPaneClipPath(
+      config.rowLines, config.colLines, config.margin,
+      box.rectLeftPx, box.rectTopPx, box.rectRightPx, box.rectBottomPx,
+      box.originXPx, box.originYPx
+    );
+    windowArea.style.clipPath = clipPath;
+    windowArea.style.webkitClipPath = clipPath;
+  };
+
+  let windowRectFrame;
+  const scheduleWindowRectUpdate = () => {
+    if (windowRectFrame) return;
+    windowRectFrame = window.requestAnimationFrame(() => {
+      windowRectFrame = null;
+      updateWindowRect();
+    });
+  };
+  window.addEventListener('resize', scheduleWindowRectUpdate);
+  window.addEventListener('orientationchange', scheduleWindowRectUpdate);
+
   const setActiveSeason = (season) => {
     activeSeason = season;
     hero.dataset.activeSeason = season;
+    updateWindowRect();
     components.forEach((component, index) => {
       component.setEnabled(!reducedMotion.matches && validSeasons[index] === season);
     });
@@ -490,16 +713,34 @@ contactForm?.addEventListener('submit', async (event) => {
 });
 
 // 프로그램 상세 페이지 신청 폼: Resend API 전송 후 프로그램 목록으로 돌아갑니다.
+function setProgramInquiryOpen(toggle, form, open, focus = false) {
+  form.hidden = !open;
+  toggle.setAttribute('aria-expanded', String(open));
+  if (open && focus) form.querySelector('input')?.focus({ preventScroll: true });
+}
+
 document.querySelectorAll('.program-inquiry-toggle').forEach((toggle) => {
   toggle.addEventListener('click', () => {
     const form = toggle.nextElementSibling;
     if (!(form instanceof HTMLFormElement)) return;
-    const willOpen = form.hidden;
-    form.hidden = !willOpen;
-    toggle.setAttribute('aria-expanded', String(willOpen));
-    if (willOpen) form.querySelector('input')?.focus();
+    setProgramInquiryOpen(toggle, form, form.hidden, true);
   });
 });
+
+// 홈 히어로의 신청 버튼처럼 #program-inquiry 주소로 들어온 경우, 양식을 열고
+// 첫 입력란에 바로 작성할 수 있도록 해당 위치로 이동합니다.
+const inquiryId = window.location.hash.slice(1);
+const linkedInquiryForm = inquiryId ? document.getElementById(inquiryId) : null;
+if (linkedInquiryForm instanceof HTMLFormElement && linkedInquiryForm.classList.contains('program-inquiry-form')) {
+  const linkedInquiryToggle = linkedInquiryForm.previousElementSibling;
+  if (linkedInquiryToggle instanceof HTMLButtonElement && linkedInquiryToggle.classList.contains('program-inquiry-toggle')) {
+    setProgramInquiryOpen(linkedInquiryToggle, linkedInquiryForm, true, false);
+    window.requestAnimationFrame(() => {
+      linkedInquiryForm.scrollIntoView({ block: 'center' });
+      linkedInquiryForm.querySelector('input')?.focus({ preventScroll: true });
+    });
+  }
+}
 
 document.querySelectorAll('.program-inquiry-form').forEach((form) => {
   form.addEventListener('submit', async (event) => {

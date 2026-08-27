@@ -470,14 +470,16 @@ body{letter-spacing:-.012em;text-rendering:optimizeLegibility}
 
 /* 계절 효과: 히어로의 창문 바깥 풍경 안에서만 보이도록 제한합니다. */
 .season-effects{position:absolute;z-index:0;inset:0;overflow:hidden;pointer-events:none}
-.season-window{position:absolute;top:0;left:0;width:64%;height:64%;overflow:hidden;clip-path:polygon(0 0,100% 0,100% 100%,75% 100%,75% 67%,0 67%)}
+/* top/left/width/height와 clip-path는 site.js가 실제 창문 유리 영역(창틀 칸 하나하나)에
+   맞춰 화면 크기마다 다시 계산해서 인라인 스타일로 채워줍니다(반응형 object-fit:cover 크롭 대응).
+   clip-path는 유리 칸마다 정확한 픽셀 사각형으로 잘라내므로, 그라디언트 마스크와 달리
+   경계가 흐릿해지거나 어긋나지 않고 창틀 뒤로 깔끔하게 사라집니다. */
+.season-window{position:absolute;overflow:hidden}
 .season-effect-layer{position:absolute;inset:0}
 .summer-effect-layer{overflow:hidden;isolation:isolate}
 .portfolio-hero[data-active-season="summer"] .summer-effect-layer::before,.portfolio-hero[data-active-season="summer"] .summer-effect-layer::after{content:"";position:absolute;pointer-events:none;mix-blend-mode:screen;opacity:.12;transform:translate3d(0,0,0) scale(.98);transform-origin:center;will-change:transform,opacity;animation:summerSunPulse 7s ease-in-out infinite}
 .portfolio-hero[data-active-season="summer"] .summer-effect-layer::before{z-index:0;top:8%;left:28%;width:76%;height:92%;background:conic-gradient(from 102deg at 2% 36%,rgba(255,250,226,0) 0deg,rgba(255,248,219,.06) 5deg,rgba(255,245,207,.28) 13deg,rgba(255,237,185,.5) 22deg,rgba(255,229,164,.3) 30deg,rgba(255,225,151,.07) 37deg,rgba(255,222,143,0) 43deg);-webkit-mask-image:radial-gradient(ellipse 112% 105% at 2% 36%,rgba(0,0,0,.48) 0%,#000 22%,#000 68%,rgba(0,0,0,.5) 85%,transparent 100%);mask-image:radial-gradient(ellipse 112% 105% at 2% 36%,rgba(0,0,0,.48) 0%,#000 22%,#000 68%,rgba(0,0,0,.5) 85%,transparent 100%);filter:blur(22px)}
 .portfolio-hero[data-active-season="summer"] .summer-effect-layer::after{z-index:1;top:64%;left:40%;width:58%;height:29%;border-radius:50%;background:radial-gradient(ellipse,rgba(255,244,199,.52) 0%,rgba(255,229,170,.28) 42%,rgba(255,220,139,.1) 64%,rgba(255,216,128,0) 86%);filter:blur(24px)}
-.spring-effect-layer,.autumn-effect-layer,.winter-effect-layer{-webkit-mask-image:linear-gradient(to right,#000 0 29%,transparent 29% 33%,#000 33% 58%,transparent 58% 62%,#000 62% 100%);mask-image:linear-gradient(to right,#000 0 29%,transparent 29% 33%,#000 33% 58%,transparent 58% 62%,#000 62% 100%)}
-.autumn-effect-layer,.winter-effect-layer{clip-path:inset(0 3% 33% 0)}
 .summer-sunlight-sparkle{position:absolute;z-index:2;top:var(--sparkle-top);left:var(--sparkle-left);width:calc(var(--sparkle-size) * 1.45);height:calc(var(--sparkle-size) * 1.45);border-radius:50%;background:radial-gradient(circle,rgba(255,253,230,.96) 0 13%,rgba(255,243,188,.66) 22% 39%,rgba(255,226,145,.24) 48% 62%,rgba(255,255,255,0) 76%);box-shadow:0 0 2px rgba(255,246,207,.76),0 0 5px rgba(255,224,150,.46);mix-blend-mode:screen;opacity:0;transform:translate3d(-2px,-2px,0) scale(.3) rotate(0deg);transform-origin:center;will-change:transform,opacity;animation:sunlightSparkle var(--sparkle-duration) ease-in-out var(--sparkle-delay) infinite}
 .summer-highlight-glint{position:absolute;z-index:3;top:var(--glint-top);left:var(--glint-left);width:calc(var(--glint-size) * .68);height:calc(var(--glint-size) * .68);border-radius:50%;background:radial-gradient(circle,rgba(255,255,242,1) 0 16%,rgba(255,244,193,.82) 17% 34%,rgba(255,224,145,.28) 48% 66%,transparent 76%);box-shadow:0 0 2.5px rgba(255,250,220,.94),0 0 6px rgba(255,223,143,.62);filter:drop-shadow(0 0 1.8px rgba(255,239,184,.62));mix-blend-mode:screen;opacity:0;transform:translate3d(-50%,-50%,0) scale(.25) rotate(-10deg);transform-origin:center;will-change:transform,opacity;animation:summerHighlightGlint var(--glint-duration) ease-in-out var(--glint-delay) infinite}
 .summer-sunlight-sparkle.summer-flower-sparkle{width:calc(var(--sparkle-size) * 1.95);height:calc(var(--sparkle-size) * 1.95);box-shadow:0 0 2.5px rgba(255,253,225,.96),0 0 8.5px rgba(255,228,150,.72);animation-name:flowerSunlightSparkle}
@@ -498,9 +500,9 @@ body{letter-spacing:-.012em;text-rendering:optimizeLegibility}
   100%{opacity:0;transform:translate3d(var(--drift),58vh,0)}
 }
 @keyframes springSway{
-  0%{transform:translate3d(calc(var(--sway) * -1),0,0) rotate(-15deg)}
+  0%{transform:translate3d(calc(var(--sway) * -1),0,0) rotate(var(--rotate-start,-15deg))}
   50%{transform:translate3d(0,-2px,0) rotate(0deg)}
-  100%{transform:translate3d(var(--sway),1px,0) rotate(15deg)}
+  100%{transform:translate3d(var(--sway),1px,0) rotate(var(--rotate-end,15deg))}
 }
 @keyframes summerSunPulse{
   0%,100%{opacity:.12;transform:translate3d(0,0,0) scale(.98)}
@@ -537,7 +539,7 @@ body{letter-spacing:-.012em;text-rendering:optimizeLegibility}
   0%{opacity:0;transform:translate3d(0,-8px,0) rotate(var(--rotate-start))}
   10%{opacity:.66}
   82%{opacity:.55}
-  100%{opacity:0;transform:translate3d(0,62vh,0) rotate(var(--rotate-end))}
+  100%{opacity:0;transform:translate3d(var(--drift,0),62vh,0) rotate(var(--rotate-end))}
 }
 @keyframes snow{
   0%{opacity:0;transform:translate3d(0,-6px,0) rotate(var(--rotate-start))}
@@ -547,12 +549,9 @@ body{letter-spacing:-.012em;text-rendering:optimizeLegibility}
 }
 
 @media (max-width:699px){
-  /* 세로 화면의 object-fit 잘림에 맞춘 창문 영역입니다. */
-  .season-window{width:72%;height:42%;clip-path:none}
+  /* .season-window의 위치/크기는 site.js가 계산해서 인라인으로 채우므로 여기서는 다루지 않습니다. */
   .portfolio-hero[data-active-season="summer"] .summer-effect-layer::before{top:10%;left:31%;width:69%;height:84%}
   .portfolio-hero[data-active-season="summer"] .summer-effect-layer::after{top:65%;left:38%;width:61%;height:27%}
-  .spring-effect-layer,.autumn-effect-layer,.winter-effect-layer{-webkit-mask-image:linear-gradient(to right,#000 0 30%,transparent 30% 35%,#000 35% 61%,transparent 61% 66%,#000 66% 100%);mask-image:linear-gradient(to right,#000 0 30%,transparent 30% 35%,#000 35% 61%,transparent 61% 66%,#000 66% 100%)}
-  .autumn-effect-layer,.winter-effect-layer{clip-path:inset(0 3% 12% 0)}
 }
 
 @media (prefers-reduced-motion:reduce){
@@ -935,7 +934,9 @@ body>.portfolio-site.shop-site{background:#faf6f0}
 #contact-form-status[data-state="error"]{color:#a3453a;font-weight:600}
 
 /* Program detail inquiry forms */
-.program-inquiry-toggle{border-top:0;border-right:0;border-left:0;background:transparent;cursor:pointer;font-family:inherit}
+.program-inquiry-toggle{display:inline-flex;align-items:center;gap:12px;min-height:58px;padding:0 24px;border:1px solid var(--sage-dark);border-radius:12px;background:var(--sage-dark);box-shadow:0 8px 20px rgba(92,58,40,.18);color:#fff;cursor:pointer;font-family:inherit;font-size:16px;font-weight:700;letter-spacing:-.01em;transition:background-color .2s,box-shadow .2s,transform .2s}
+.program-inquiry-toggle:hover,.program-inquiry-toggle:focus-visible{background:#6f3827;box-shadow:0 11px 26px rgba(92,58,40,.25);color:#fff;transform:translateY(-2px)}
+.program-inquiry-toggle:focus-visible{outline:3px solid rgba(140,74,50,.28);outline-offset:3px}
 .program-inquiry-form{display:grid;gap:18px;max-width:720px;margin-top:32px;padding:30px;background:rgba(255,255,255,.48);border:1px solid var(--line)}
 .program-inquiry-form[hidden]{display:none}
 .program-inquiry-form .button{margin-top:4px}
