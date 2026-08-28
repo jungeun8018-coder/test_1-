@@ -498,10 +498,17 @@ function initSeasonEffects() {
   const previewSeason = new URLSearchParams(window.location.search).get('season');
   let activeSeason = validSeasons.includes(previewSeason) ? previewSeason : 'spring';
   const seasonImages = {
-    spring: 'images/hero-bellavi-spring.png',
-    summer: 'images/hero-bellavi-summer-luminous-wildflowers.png',
-    autumn: 'images/hero-bellavi-autumn.png',
-    winter: 'images/hero-bellavi-winter.png',
+    spring: '/images/spring-hero-petals-window-only.webp',
+    summer: '/images/bellavi-summer-final-layer-composite.webp',
+    autumn: '/images/bellavi-autumn-clean-table-preview.webp',
+    winter: '/images/bellavi-winter-three-layers-preview-v3.webp',
+  };
+  /* Animated WebP를 지원하지 않는 환경에서는 기존 GIF로 대체합니다. */
+  const seasonImagesFallback = {
+    spring: '/images/spring-hero-petals-window-only.gif',
+    summer: '/images/bellavi-summer-final-layer-composite.gif',
+    autumn: '/images/bellavi-autumn-clean-table-preview.gif',
+    winter: '/images/bellavi-winter-three-layers-preview-v3.gif',
   };
   const firstImage = hero.querySelector('[data-season-image]');
   if (!firstImage) return;
@@ -522,18 +529,9 @@ function initSeasonEffects() {
   effects.append(windowArea);
   hero.querySelector('.hero-art')?.after(effects);
 
-  const layer = (season, parent = windowArea) => {
-    const effectLayer = document.createElement('div');
-    effectLayer.className = `season-effect-layer ${season}-effect-layer`;
-    parent.append(effectLayer);
-    return effectLayer;
-  };
-  const components = [
-    new SpringEffect(layer('spring'), { asset: 'images/season-petal.png' }),
-    new SummerEffect(layer('summer', effects)),
-    new AutumnEffect(layer('autumn'), { asset: 'images/season-leaf.png' }),
-    new WinterEffect(layer('winter'), { asset: 'images/season-snowflake.png' }),
-  ];
+  // 계절별 완성 GIF에 애니메이션이 포함되어 있으므로, 기존 효과 레이어는 비워 둡니다.
+  // 계절 전환·클릭 기능은 아래의 이미지 전환 로직으로 그대로 유지됩니다.
+  const components = [];
 
   let visibleImage = firstImage;
   let hiddenImage = secondImage;
@@ -604,12 +602,15 @@ function initSeasonEffects() {
 
   const loadSeasonImage = async (image, season) => {
     image.classList.remove('season-image-ready');
-    image.src = seasonImages[season];
-    if (!image.complete || image.naturalWidth <= 1) {
-      await new Promise((resolve) => {
-        image.addEventListener('load', resolve, { once: true });
-        image.addEventListener('error', resolve, { once: true });
+    /* WebP를 먼저 시도하고, 로드에 실패하면 같은 계절의 GIF로 대체합니다. */
+    const sources = [seasonImages[season], seasonImagesFallback[season]].filter(Boolean);
+    for (let i = 0; i < sources.length; i += 1) {
+      image.src = sources[i];
+      const loaded = (image.complete && image.naturalWidth > 1) || await new Promise((resolve) => {
+        image.addEventListener('load', () => resolve(true), { once: true });
+        image.addEventListener('error', () => resolve(false), { once: true });
       });
+      if (loaded) break;
     }
     try {
       await image.decode();
