@@ -5,14 +5,14 @@ import { usePathname } from "next/navigation";
 import { FullReloadLink } from "@/components/FullReloadLink";
 
 const navigation = [
-  { href: "/", label: "Home", active: ["/"] },
-  { href: "/about", label: "About", active: ["/about"] },
-  { href: "/works", label: "Works", active: ["/works", "/gallery", "/illustration"] },
-  { href: "/programs", label: "Programs", active: ["/programs"] },
-  { href: "/shop", label: "Shop", active: ["/shop"] },
+  { href: "/about", label: "About", active: ["/about", "/works", "/gallery", "/illustration", "/artist"] },
+  { href: "/programs", label: "Program", active: ["/programs"] },
   { href: "/beyond", label: "Beyond the Canvas", active: ["/beyond", "/journal", "/journey", "/people", "/notes"] },
-  { href: "/contact", label: "Contact", active: ["/contact"] }
+  { href: "/shop", label: "Shop", active: ["/shop"] }
 ];
+
+// 모바일 메뉴 하단에만 노출되는 신청 CTA (데스크톱 인라인 내비에서는 CSS로 숨김).
+const menuInquiry = { href: "/programs/seasonal#program-inquiry", label: "프로그램 신청 문의" };
 
 export function SiteHeader() {
   const pathname = usePathname();
@@ -35,6 +35,9 @@ export function SiteHeader() {
                 {item.label}
               </FullReloadLink>
             ))}
+            <FullReloadLink className="main-nav-cta" href={menuInquiry.href}>
+              {menuInquiry.label}
+            </FullReloadLink>
           </nav>
         </div>
       </header>

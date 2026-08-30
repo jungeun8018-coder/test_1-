@@ -294,13 +294,16 @@ class SeasonEffect {
 
 class SpringEffect extends SeasonEffect {
   start() {
-    /* 시작 시점이 기계적으로 반복되는 느낌이 들지 않도록 각 시작 지연에 약간의 흔들림을 줍니다. */
-    [0, 1300, 2700, 4200, 5900].forEach((delay) => this.spawn(delay + this.random(0, 500)));
+    /* 화사한 봄 느낌이 나도록 꽃잎을 촘촘히(이전 대비 약 2배) 뿌리되, 시작 지연에 흔들림을
+       줘서 한꺼번에 쏟아지는 느낌은 피합니다. */
+    [0, 200, 400, 650, 900, 1150, 1400, 1700, 2000, 2300, 2650, 3000,
+      3400, 3800, 4200, 4650, 5100, 5600, 6100, 6600, 7100, 7700, 8300, 9000]
+      .forEach((delay) => this.spawn(delay + this.random(0, 350)));
   }
 
   spawn(delay = 0) {
-    if (this.root.querySelectorAll('.spring-fall').length >= 5) {
-      this.schedule(() => this.spawn(), this.random(1800, 3200));
+    if (this.root.querySelectorAll('.spring-fall').length >= 32) {
+      this.schedule(() => this.spawn(), this.random(500, 1100));
       return;
     }
     const duration = this.random(9, 12);
@@ -310,8 +313,10 @@ class SpringEffect extends SeasonEffect {
     fall.className = 'spring-fall';
     const styles = {
       '--size': `${this.random(6, 10)}px`,
-      '--top': `${this.random(5, 24)}%`,
-      '--left': `${this.random(45, 90)}%`,
+      /* .hero-fx는 Hero 전체(.hero-art) 기준이므로 창문이 있는 왼쪽~중앙 영역에서 시작하도록 합니다.
+         창틀 밖(벽·실내)으로 흘러간 꽃잎은 위에 얹힌 불투명 foreground가 가려줍니다. */
+      '--top': `${this.random(-6, 18)}%`,
+      '--left': `${this.random(2, 66)}%`,
       '--duration': `${duration}s`,
       '--delay': `${delay}ms`,
       '--drift': `${this.random(1.5, 4) * direction}vw`,
@@ -330,7 +335,8 @@ class SpringEffect extends SeasonEffect {
     fall.append(petal);
     fall.addEventListener('animationend', () => fall.remove(), { once: true });
     this.root.append(fall);
-    this.schedule(() => this.spawn(), delay + duration * 1000 + this.random(1200, 2600));
+    /* 다음 꽃잎을 이전 꽃잎이 다 떨어질 때까지 기다리지 않고 꾸준히 이어서 뿌립니다. */
+    this.schedule(() => this.spawn(), this.random(450, 1050));
   }
 }
 
@@ -497,15 +503,18 @@ function initSeasonEffects() {
   const validSeasons = ['spring', 'summer', 'autumn', 'winter'];
   const previewSeason = new URLSearchParams(window.location.search).get('season');
   let activeSeason = validSeasons.includes(previewSeason) ? previewSeason : 'spring';
+  /* 봄만 '창밖 풍경(창틀 없음)'을 배경으로 깔고, 그 위에 떨어지는 벚꽃(.hero-fx)과
+     창틀+실내 foreground(.hero-foreground, 창유리 true 투명)를 레이어로 얹습니다.
+     여름/가을/겨울은 완성 이미지를 그대로 사용합니다. */
   const seasonImages = {
-    spring: '/images/spring-hero-petals-window-only.webp',
+    spring: '/images/bellavi-studio-outdoor-spring.webp',
     summer: '/images/bellavi-summer-final-layer-composite.webp',
     autumn: '/images/bellavi-autumn-clean-table-preview.webp',
     winter: '/images/bellavi-winter-three-layers-preview-v3.webp',
   };
-  /* Animated WebP를 지원하지 않는 환경에서는 기존 GIF로 대체합니다. */
+  /* WebP를 지원하지 않는 환경 대체본. 봄은 3레이어가 하나로 구워진 완성 GIF를 사용합니다. */
   const seasonImagesFallback = {
-    spring: '/images/spring-hero-petals-window-only.gif',
+    spring: '/images/bellavi-spring-horizontal-mullions-clean.gif',
     summer: '/images/bellavi-summer-final-layer-composite.gif',
     autumn: '/images/bellavi-autumn-clean-table-preview.gif',
     winter: '/images/bellavi-winter-three-layers-preview-v3.gif',
@@ -529,15 +538,20 @@ function initSeasonEffects() {
   effects.append(windowArea);
   hero.querySelector('.hero-art')?.after(effects);
 
-  // 계절별 완성 GIF에 애니메이션이 포함되어 있으므로, 기존 효과 레이어는 비워 둡니다.
-  // 계절 전환·클릭 기능은 아래의 이미지 전환 로직으로 그대로 유지됩니다.
-  const components = [];
+  // 봄: 창밖 풍경(배경)과 창틀(.hero-foreground) 사이에서 벚꽃이 떨어지는 레이어.
+  // .hero-fx는 .hero-art 안 z-index:1이라 불투명한 창틀/실내(.hero-foreground)가 창밖 영역을 뺀
+  // 나머지를 덮어, 화면 크기와 무관하게 벚꽃이 창유리 안에서만 보입니다(별도 좌표 보정 불필요).
+  // 여름/가을/겨울은 완성 이미지를 그대로 쓰므로 효과 레이어가 없습니다.
+  const heroFx = hero.querySelector('.hero-fx');
+  const components = heroFx
+    ? [new SpringEffect(heroFx, { asset: '/images/season-petal.png' })]
+    : [];
 
   let visibleImage = firstImage;
   let hiddenImage = secondImage;
   let rotationTimer;
   let isChanging = false;
-  const seasonDuration = 8000;
+  const seasonDuration = 6000;
   const transitionDuration = 1000;
 
   const heroArt = hero.querySelector('.hero-art');
@@ -781,6 +795,88 @@ document.querySelectorAll('.program-inquiry-form').forEach((form) => {
       status.dataset.state = 'error';
       status.textContent = error instanceof Error ? error.message : '전송 중 오류가 발생했습니다.';
       submitButton.disabled = false;
+    }
+  });
+});
+
+// Works 페이지 '작업 문의' 폼: 기존 /api/contact(Resend) 엔드포인트를 그대로 재사용합니다.
+// program 값을 보내지 않으므로 Supabase(program_inquiries)에는 저장되지 않고 이메일만 발송됩니다.
+document.querySelectorAll('.work-inquiry-toggle').forEach((toggle) => {
+  toggle.addEventListener('click', () => {
+    const form = document.getElementById(toggle.getAttribute('aria-controls') || '');
+    if (!(form instanceof HTMLFormElement) || !form.classList.contains('work-inquiry-form')) return;
+    setProgramInquiryOpen(toggle, form, form.hidden, true);
+  });
+});
+
+document.querySelectorAll('.work-inquiry-form').forEach((form) => {
+  form.addEventListener('submit', async (event) => {
+    event.preventDefault();
+
+    const submitButton = form.querySelector('button[type="submit"]');
+    const status = form.querySelector('.work-inquiry-status');
+    if (!(submitButton instanceof HTMLButtonElement) || !(status instanceof HTMLElement)) return;
+
+    const formData = new FormData(form);
+    const get = (key) => String(formData.get(key) || '').trim();
+    const payload = {
+      name: formData.get('name'),
+      email: formData.get('email'),
+      message: [
+        '안녕하세요. 작업 문의드립니다.',
+        '',
+        `작업 종류: ${get('workType')}`,
+        `희망 일정: ${get('schedule') || '-'}`,
+        `예산: ${get('budget') || '-'}`,
+        '',
+        '작업 내용:',
+        get('message')
+      ].join('\n')
+    };
+
+    submitButton.disabled = true;
+    status.removeAttribute('data-state');
+    status.textContent = '전송 중입니다...';
+
+    try {
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.error || '전송에 실패했습니다.');
+
+      status.dataset.state = 'success';
+      status.textContent = '작업 문의가 전달되었습니다.\n확인 후 답변드리겠습니다.';
+      form.reset();
+    } catch (error) {
+      status.dataset.state = 'error';
+      status.textContent = error instanceof Error ? error.message : '전송 중 오류가 발생했습니다.';
+    } finally {
+      submitButton.disabled = false;
+    }
+  });
+});
+
+// Contact 페이지: Email 주소를 mailto 대신 클립보드 복사로 제공합니다.
+document.querySelectorAll('.copy-email').forEach((button) => {
+  button.addEventListener('click', async () => {
+    const email = button.getAttribute('data-copy-email') || '';
+    const hint = button.querySelector('.copy-hint');
+    const reset = () => { if (hint) window.setTimeout(() => { hint.textContent = '복사'; }, 1600); };
+    try {
+      await navigator.clipboard.writeText(email);
+      if (hint) hint.textContent = '복사됨';
+      reset();
+    } catch {
+      // 클립보드 API를 못 쓰는 환경에서는 주소를 선택 상태로 노출합니다.
+      const range = document.createRange();
+      range.selectNodeContents(button.querySelector('small') || button);
+      const selection = window.getSelection();
+      selection?.removeAllRanges();
+      selection?.addRange(range);
+      if (hint) { hint.textContent = '직접 복사'; reset(); }
     }
   });
 });
