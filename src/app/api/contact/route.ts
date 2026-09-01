@@ -9,9 +9,9 @@ import { getSupabaseAdminClient } from "@/lib/supabase-admin";
 // 아래 주소를 다시 "jjung8018@naver.com"(스튜디오 대표 메일)으로 바꿔주세요.
 const CONTACT_TO_EMAIL = "jungeun8018@gmail.com";
 
-// 도메인 인증 전에는 Resend 발신 주소를 이 값으로 둡니다 (Resend 기본 테스트 도메인).
-// 나중에 studio 도메인을 Resend에 인증하면 "no-reply@bellavi-studio.com" 같은 주소로 바꿀 수 있습니다.
-const CONTACT_FROM_EMAIL = "BellaVi Studio <onboarding@resend.dev>";
+// Resend에서 bellavi-studio.com 도메인 인증(Verified)이 완료되어 있으므로
+// 발신 주소를 인증된 도메인 주소로 사용합니다.
+const CONTACT_FROM_EMAIL = "BellaVi Studio <hello@bellavi-studio.com>";
 
 type ContactPayload = {
   name?: unknown;
