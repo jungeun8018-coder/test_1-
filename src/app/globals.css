@@ -147,12 +147,26 @@ body{letter-spacing:-.012em;text-rendering:optimizeLegibility}
 .artist-jumps .faq-item.artist-jump{border-top:1px solid var(--line)}
 .artist-jumps .faq-item.artist-jump:last-child{border-bottom:1px solid var(--line)}
 .artist-jumps .artist-jump>button{font-size:16px;color:var(--sage-dark)}
-.artist-jumps .artist-jump>button span:last-child{transition:transform .2s ease}
-.artist-jumps .artist-jump.open>button span:last-child{transform:rotate(90deg)}
+/* 열림/닫힘 표시는 화살표 회전 대신 얇은 +/− (닫힘 = +, 열림 = −) */
+.artist-jump-icon{position:relative;flex:none;width:13px;height:13px;margin-top:5px}
+.artist-jump-icon::before,.artist-jump-icon::after{content:"";position:absolute;left:0;top:50%;width:100%;height:1px;background:currentColor;transition:transform .28s ease,opacity .28s ease}
+.artist-jump-icon::after{transform:rotate(90deg)}
+.artist-jumps .artist-jump.open .artist-jump-icon::after{transform:rotate(0);opacity:0}
 .artist-jump .faq-answer{padding-top:4px}
 .artist-jump .faq-answer .history-block:first-child{margin-top:0}
 .artist-jump .faq-answer .about-actions{margin-top:26px}
 .artist-jump .faq-answer .program-text-link{margin-top:24px}
+/* '실제 작업과 활동' 안의 Fine Art / Illustration / Art & Education 바로가기 */
+.artist-work-links{margin:22px 0 0;padding:0;list-style:none;border-top:1px solid var(--line)}
+.artist-work-links li{border-bottom:1px solid var(--line)}
+.artist-work-links a{display:flex;align-items:baseline;gap:16px;padding:17px 2px;color:var(--ink)}
+.artist-work-links .awl-title{font:500 19px/1.35 var(--serif);letter-spacing:.005em}
+.artist-work-links .awl-desc{flex:1;min-width:0;color:#8a7a6c;font-size:14px}
+.artist-work-links .awl-arrow{flex:none;color:var(--sage-dark);transition:transform .25s ease}
+@media (hover:hover) and (pointer:fine){
+  .artist-work-links a:hover .awl-title,.artist-work-links a:focus-visible .awl-title{color:var(--sage-dark)}
+  .artist-work-links a:hover .awl-arrow,.artist-work-links a:focus-visible .awl-arrow{transform:translateX(5px)}
+}
 .about-closing{padding-block:145px;background:#fff}
 .about-closing .about-copy{font:500 clamp(31px,5vw,45px)/1.55 var(--serif);color:var(--sage-dark)}
 .about-closing p{margin-bottom:30px}
@@ -607,6 +621,8 @@ body{letter-spacing:-.012em;text-rendering:optimizeLegibility}
 .education-image{overflow:hidden;aspect-ratio:1/1;background:#efe1d1}
 .education-image img{display:block;width:100%;height:100%;object-fit:cover;transition:transform .3s ease}
 .education-work-landscape .education-image img{object-fit:contain;transform:rotate(-90deg)}
+/* 정사각 크롭 시 왼쪽(강사)이 잘리지 않도록 이 이미지만 왼쪽 기준으로 맞춥니다. */
+.education-work-focus-left .education-image img{object-position:left center}
 .education-work figcaption{padding-top:14px;color:#7a6a5c;font-size:14px;line-height:1.6}
 .education-program-details{margin-top:64px}
 .education-program-details>summary{list-style:none;cursor:pointer}
