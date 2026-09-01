@@ -991,3 +991,119 @@ body>.portfolio-site.shop-site{background:#faf6f0}
 .program-inquiry-status[data-state="success"],.work-inquiry-status[data-state="success"]{color:var(--sage-dark);font-weight:600}
 .program-inquiry-status[data-state="error"],.work-inquiry-status[data-state="error"]{color:#a3453a;font-weight:600}
 @media (min-width:700px){.program-inquiry-form,.work-inquiry-form{grid-template-columns:1fr 1fr}.program-inquiry-form .full,.work-inquiry-form .full{grid-column:1/-1}}
+
+/* ============================================================
+   Programs redesign — mobile-first editorial "pgm" system.
+   Consumers: program-postcard / -calendar / -seasonal .html
+   (two zones: .pgm-overview + .pgm-story-section).
+   program-community.html keeps its legacy .program-detail-* /
+   .community-* markup and is only retuned in the @media block below.
+   The legacy .program-detail-content / .program-process /
+   .program-result / .program-detail-facts / .program-practical-list /
+   .program-clarity-note / .program-detail-duration rules are now
+   unused by the three redesigned pages (community still needs
+   .program-detail-hero + .program-detail-contact) — kept for now,
+   safe to delete once community migrates to .pgm-*.
+   ============================================================ */
+.pgm-inner{width:100%;max-width:660px;margin-inline:auto;min-width:0}
+.pgm p,.pgm dd,.pgm .breadcrumb{overflow-wrap:anywhere}
+.portfolio-site .pgm-overview.section{padding:104px 24px 44px}
+.portfolio-site .pgm-story-section.section{padding:52px 24px 84px;border-top:1px solid var(--line)}
+
+.pgm-eyebrow{margin:0 0 14px;font:600 11px/1.5 var(--sans);letter-spacing:.2em;text-transform:uppercase;color:var(--sage-dark)}
+.pgm .breadcrumb{margin-bottom:18px}
+.pgm-duration{display:inline-block;margin:0 0 16px;padding:5px 11px;border:1px solid rgba(90,64,50,.26);font:600 11px/1.3 var(--sans);letter-spacing:.12em;text-transform:uppercase;color:var(--sage-dark)}
+.portfolio-site .pgm .pgm-title{margin:0 0 16px;font:500 clamp(28px,7.2vw,44px)/1.14 var(--serif);letter-spacing:-.03em;color:var(--ink)}
+.pgm-title span{color:var(--sage-dark)}
+.pgm-lead{margin:0;font-size:15px;line-height:1.8;color:var(--brown)}
+
+.pgm-flow{margin-top:38px}
+.pgm-flow .pgm-eyebrow{margin-bottom:8px}
+.pgm-steps{margin:0;padding:0;list-style:none;border-top:1px solid var(--line)}
+.pgm-steps li{position:relative;padding:14px 0 14px 34px;border-bottom:1px solid var(--line)}
+.pgm-step-no{position:absolute;left:0;top:16px;font:600 12px/1 var(--serif);letter-spacing:.08em;color:var(--sage-dark)}
+.pgm-step-text{display:block;font:500 15px/1.5 var(--sans);letter-spacing:-.01em;color:var(--ink)}
+.pgm-step-desc{display:block;margin-top:3px;font-size:13px;line-height:1.6;color:#7a6a5c}
+
+.pgm-result{margin-top:30px;padding-top:22px;border-top:1px solid var(--line)}
+.pgm-result .pgm-eyebrow{margin-bottom:8px}
+.pgm-result-pre{margin:0 0 3px;font-size:13px;color:#677069}
+.pgm-result-name{margin:0;font:500 clamp(22px,5.6vw,30px)/1.2 var(--serif);letter-spacing:-.02em;color:var(--sage-dark)}
+
+.pgm-visual{margin:0 0 38px;background:#efe1d1}
+.pgm-visual img{display:block;width:100%;height:auto}
+
+.pgm-story{max-width:640px}
+.portfolio-site .pgm .pgm-h2{margin:0 0 20px;font:500 clamp(24px,6vw,34px)/1.24 var(--serif);letter-spacing:-.02em;color:var(--ink)}
+.pgm-prose p{margin:0 0 16px;font-size:16px;line-height:1.85;color:#3f4942}
+.pgm-prose p:last-child{margin-bottom:0}
+.pgm-prose strong{font-weight:600;color:var(--sage-dark)}
+.pgm-note{margin:22px 0 0;padding-left:15px;border-left:2px solid var(--sage);font-size:14px;line-height:1.7;color:#4f5750}
+
+.pgm-info{margin:38px 0 0;padding:0;border-top:1px solid var(--line)}
+.pgm-info>div{padding:14px 0;border-bottom:1px solid var(--line)}
+.pgm-info dt{margin-bottom:5px;font:600 11px/1.4 var(--sans);letter-spacing:.14em;text-transform:uppercase;color:var(--sage-dark)}
+.pgm-info dd{margin:0;font-size:14px;line-height:1.7;color:#4f5750}
+
+.pgm-cta{margin-top:38px;padding-top:28px;border-top:1px solid var(--line)}
+.pgm-cta-intro{margin:0 0 18px;max-width:520px;font-size:14px;line-height:1.7;color:#7a6a5c}
+.pgm .program-inquiry-toggle{min-height:50px;padding:0 22px;border-radius:2px;font-size:14px;font-weight:600;letter-spacing:.01em;box-shadow:none}
+.pgm .program-inquiry-toggle:hover,.pgm .program-inquiry-toggle:focus-visible{background:#6f3827;box-shadow:none;transform:none}
+.pgm .program-inquiry-form{margin-top:22px;padding:22px;border-radius:2px}
+
+@media (min-width:700px){
+  .pgm-inner{max-width:720px}
+  .portfolio-site .pgm-overview.section{padding:132px 40px 56px}
+  .portfolio-site .pgm-story-section.section{padding:76px 40px 116px}
+  .portfolio-site .pgm .pgm-title{font-size:clamp(38px,5.2vw,48px)}
+  .pgm-lead{font-size:17px}
+  .pgm-flow{margin-top:50px}
+  .pgm-steps li{padding:18px 0 18px 54px}
+  .pgm-step-no{top:20px}
+  .pgm-step-text{font-size:16px}
+  .pgm-step-desc{font-size:14px}
+  .pgm-result{margin-top:44px;padding-top:28px}
+  .pgm-visual{margin-bottom:52px}
+  .pgm-story{max-width:660px}
+  .portfolio-site .pgm .pgm-h2{margin-bottom:26px}
+  .pgm-info{margin-top:52px}
+  .pgm-info>div{display:grid;grid-template-columns:168px minmax(0,1fr);column-gap:28px;align-items:baseline;padding:17px 0}
+  .pgm-info dt{margin-bottom:0}
+  .pgm-cta{margin-top:52px;padding-top:36px}
+}
+@media (min-width:960px){
+  .pgm-inner{max-width:760px}
+  .portfolio-site .pgm-overview.section{padding-top:140px}
+  .portfolio-site .pgm .pgm-title{font-size:clamp(42px,4vw,50px)}
+}
+@media (prefers-reduced-motion:reduce){.pgm-steps li{transition:none}}
+
+/* Programs LIST + Community detail — compress to the pgm scale on mobile */
+@media (max-width:699px){
+  .programs-site .programs-hero{padding:112px 24px 52px}
+  .programs-site .programs-hero h1{font-size:clamp(28px,7vw,40px);line-height:1.14;letter-spacing:-.03em}
+  .program-collection-section{padding-top:72px!important}
+  .program-collection-heading h2{font-size:clamp(26px,6vw,32px)!important;margin-bottom:18px!important}
+  .program-collection-heading>p:last-child{font-size:15px}
+  .program-editorial-list{margin-top:40px}
+  .program-editorial-item{padding-block:40px}
+  .program-editorial-item .program-kicker{margin-bottom:16px}
+  .program-editorial-image{margin-bottom:20px}
+  .program-editorial-image img{aspect-ratio:16/10;object-fit:cover}
+  .program-editorial-copy h2,.program-editorial-text .program-editorial-copy h2,.program-editorial-feature .program-editorial-copy h2{font-size:clamp(24px,6.2vw,28px)!important;margin-bottom:16px!important}
+  .program-intro{margin-bottom:20px;font-size:15px;line-height:1.8}
+  .program-community-invite h2{font-size:clamp(24px,5.6vw,30px)!important}
+  .program-community-invite p:not(.eyebrow){margin-bottom:20px}
+  .program-closing h2{font-size:clamp(25px,6vw,32px)!important;margin-bottom:26px!important}
+
+  .program-detail-hero.community-hero{padding:104px 0 50px}
+  .community-hero h1{font-size:clamp(26px,6.4vw,31px);margin-bottom:16px}
+  .community-hero .lead{font-size:15px;line-height:1.75}
+  .community-year{padding-top:64px!important}
+  .community-intro{margin-bottom:44px}
+  .community-intro h2{font-size:clamp(23px,5.6vw,28px)!important}
+  .community-timeline li{padding-bottom:44px}
+  .community-timeline article h2{font-size:clamp(20px,5vw,23px)!important;margin-bottom:15px!important}
+  .community-timeline article>p:not(.eyebrow){font-size:14px;line-height:1.75}
+  .community-year .program-detail-contact{margin-top:46px;padding-top:32px}
+}
