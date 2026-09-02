@@ -40,8 +40,16 @@ export function generateStaticParams() {
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
-  const page = pageFromSlug((await params).slug);
-  return page ? metadataFor(page) : { title: "페이지를 찾을 수 없습니다. | BellaVi Studio" };
+  const slug = (await params).slug;
+  const page = pageFromSlug(slug);
+  if (!page) return { title: "페이지를 찾을 수 없습니다. | BellaVi Studio" };
+
+  // canonical은 공식 도메인(metadataBase: https://bellavi-studio.com) 기준 절대 URL로 생성됩니다.
+  const path = slug && slug.length > 0 ? `/${slug.join("/")}` : "/";
+  return {
+    ...metadataFor(page),
+    alternates: { canonical: path }
+  };
 }
 
 export default async function Page({ params }: PageProps) {

@@ -21,6 +21,7 @@ const sans = Noto_Sans_KR({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://bellavi-studio.com"),
   title: "BellaVi Studio",
   description: "회화와 일러스트, 미술교육을 잇는 BellaVi Studio"
 };
