@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
 import { LegacyPage } from "@/components/LegacyPage";
-import { metadataFor, type LegacyPageName } from "@/lib/legacy-pages";
+import { metadataFor, pageDefinitions, type LegacyPageName } from "@/lib/legacy-pages";
 
 const routes: Record<string, LegacyPageName> = {
   "": "index.html",
@@ -44,11 +44,35 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const page = pageFromSlug(slug);
   if (!page) return { title: "페이지를 찾을 수 없습니다. | BellaVi Studio" };
 
-  // canonical은 공식 도메인(metadataBase: https://bellavi-studio.com) 기준 절대 URL로 생성됩니다.
+  // canonical / og:url 은 공식 도메인(metadataBase: https://bellavi-studio.com) 기준 절대 URL로 생성됩니다.
   const path = slug && slug.length > 0 ? `/${slug.join("/")}` : "/";
+  const { title, description } = pageDefinitions[page];
+  const ogImage = {
+    url: "/opengraph-image",
+    width: 1200,
+    height: 630,
+    alt: "BellaVi Studio — Art for a Beautiful Life",
+    type: "image/png"
+  };
+
   return {
     ...metadataFor(page),
-    alternates: { canonical: path }
+    alternates: { canonical: path },
+    openGraph: {
+      type: "website",
+      siteName: "BellaVi Studio",
+      locale: "ko_KR",
+      url: path,
+      title,
+      description,
+      images: [ogImage]
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: [ogImage.url]
+    }
   };
 }
 

@@ -403,7 +403,7 @@ body{letter-spacing:-.012em;text-rendering:optimizeLegibility}
   .simple-links small{display:block;margin-top:5px;text-align:left}
   .illustration-cta .about-actions{flex-direction:column}
   .illustration-cta .about-actions .button{width:100%}
-  .artist-photo{max-width:320px}
+  .artist-photo{max-width:340px;margin-inline:auto}
   .artist-profile .artist-name{margin:30px 0 45px}
 }
 
@@ -1206,4 +1206,6 @@ body>.portfolio-site.shop-site{background:#faf6f0}
   .home .portfolio-hero .hero-link{margin-top:18px;font-size:13px}
   .home-journal-lead-copy h3{font-size:20px}
   .home-journal-list h3{font-size:18px}
+  /* 모바일: Artist 사진을 가운데 정렬 + 살짝 키워 전체 분위기와 맞춤 */
+  .home-artist .portrait-frame{max-width:340px;margin-inline:auto}
 }
