@@ -32,8 +32,8 @@ type PageDefinition = {
 
 export const pageDefinitions: Record<LegacyPageName, PageDefinition> = {
   "index.html": {
-    title: "BellaVi Studio",
-    description: "회화와 일러스트, 미술교육을 잇는 BellaVi Studio",
+    title: "BellaVi Studio | 좋아하는 것을 오래 잃지 않는 삶",
+    description: "좋아하는 것을 발견하고, 오래 품으며 자신만의 모습으로 살아가는 시간을 함께합니다.",
     bodyClass: "portfolio-site"
   },
   "about.html": {

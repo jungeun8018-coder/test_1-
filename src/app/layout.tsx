@@ -22,7 +22,9 @@ const sans = Noto_Sans_KR({
 
 const SITE_URL = "https://bellavi-studio.com";
 const SITE_NAME = "BellaVi Studio";
-const SITE_DESCRIPTION = "회화와 일러스트, 미술교육을 잇는 BellaVi Studio";
+// 브랜드 방향: "좋아하는 것을 오래 잃지 않는 삶"
+const SITE_TITLE = "BellaVi Studio | 좋아하는 것을 오래 잃지 않는 삶";
+const SITE_DESCRIPTION = "좋아하는 것을 발견하고, 오래 품으며 자신만의 모습으로 살아가는 시간을 함께합니다.";
 // public/images/illustration-vacation-og.jpg 를 사이트 전체 기본 공유 이미지로 사용합니다. (2:1 가로형)
 const OG_IMAGE = {
   url: "/images/illustration-vacation-og.jpg",
@@ -35,7 +37,7 @@ const OG_IMAGE = {
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   applicationName: SITE_NAME,
-  title: SITE_NAME,
+  title: SITE_TITLE,
   description: SITE_DESCRIPTION,
   authors: [{ name: "Park Jungeun" }],
   creator: "Park Jungeun",
@@ -57,13 +59,13 @@ export const metadata: Metadata = {
     siteName: SITE_NAME,
     locale: "ko_KR",
     url: SITE_URL,
-    title: SITE_NAME,
+    title: SITE_TITLE,
     description: SITE_DESCRIPTION,
     images: [OG_IMAGE]
   },
   twitter: {
     card: "summary_large_image",
-    title: SITE_NAME,
+    title: SITE_TITLE,
     description: SITE_DESCRIPTION,
     images: [OG_IMAGE.url]
   }
