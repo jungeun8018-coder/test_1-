@@ -23,11 +23,11 @@ const sans = Noto_Sans_KR({
 const SITE_URL = "https://bellavi-studio.com";
 const SITE_NAME = "BellaVi Studio";
 const SITE_DESCRIPTION = "회화와 일러스트, 미술교육을 잇는 BellaVi Studio";
-// public/images/illustration-vacation-2024.jpg 를 사이트 전체 기본 공유 이미지로 사용합니다.
+// public/images/illustration-vacation-og.jpg 를 사이트 전체 기본 공유 이미지로 사용합니다. (2:1 가로형)
 const OG_IMAGE = {
-  url: "/images/illustration-vacation-2024.jpg",
-  width: 2551,
-  height: 3189,
+  url: "/images/illustration-vacation-og.jpg",
+  width: 2273,
+  height: 1141,
   alt: "BellaVi Studio — Art for a Beautiful Life",
   type: "image/jpeg"
 };
