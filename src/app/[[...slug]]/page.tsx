@@ -48,11 +48,11 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const path = slug && slug.length > 0 ? `/${slug.join("/")}` : "/";
   const { title, description } = pageDefinitions[page];
   const ogImage = {
-    url: "/opengraph-image",
-    width: 1200,
-    height: 630,
+    url: "/images/illustration-vacation-2024.jpg",
+    width: 2551,
+    height: 3189,
     alt: "BellaVi Studio — Art for a Beautiful Life",
-    type: "image/png"
+    type: "image/jpeg"
   };
 
   return {

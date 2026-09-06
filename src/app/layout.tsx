@@ -23,13 +23,13 @@ const sans = Noto_Sans_KR({
 const SITE_URL = "https://bellavi-studio.com";
 const SITE_NAME = "BellaVi Studio";
 const SITE_DESCRIPTION = "회화와 일러스트, 미술교육을 잇는 BellaVi Studio";
-// app/opengraph-image.tsx 로 생성되는 기본 공유 이미지 (1200x630).
+// public/images/illustration-vacation-2024.jpg 를 사이트 전체 기본 공유 이미지로 사용합니다.
 const OG_IMAGE = {
-  url: "/opengraph-image",
-  width: 1200,
-  height: 630,
+  url: "/images/illustration-vacation-2024.jpg",
+  width: 2551,
+  height: 3189,
   alt: "BellaVi Studio — Art for a Beautiful Life",
-  type: "image/png"
+  type: "image/jpeg"
 };
 
 export const metadata: Metadata = {
