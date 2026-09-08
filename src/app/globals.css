@@ -284,6 +284,11 @@ body{letter-spacing:-.012em;text-rendering:optimizeLegibility}
 .artist-name h2{margin-bottom:8px;font-size:36px}
 .artist-name p{margin:0;color:var(--sage-dark);font-family:var(--serif);font-size:20px}
 .artist-profile .artist-name{margin-bottom:58px}
+/* /artist · ABOUT THE ARTIST — 가로형 인물 사진(원본 1687x1020). 정사각 크롭 대신 원본 비율에 가깝게 담아 왜곡·얼굴 잘림 방지 */
+.artist-page .artist-intro{min-width:0}
+.artist-page .artist-intro .eyebrow{margin-bottom:40px}
+.artist-page .artist-lead{margin:0;font-size:19px;line-height:1.65;color:var(--ink)}
+.artist-page .artist-photo{max-width:100%;aspect-ratio:16/10}
 .facts-grid{display:grid;gap:70px}
 .facts-grid h2{margin-bottom:28px}
 .facts-grid ul{margin:0;padding:0;list-style:none;border-top:1px solid var(--line)}
@@ -366,6 +371,11 @@ body{letter-spacing:-.012em;text-rendering:optimizeLegibility}
   .minimal-values article+article{padding-left:28px}
   .minimal-values article:last-child{border-right:0}
   .artist-layout{grid-template-columns:minmax(0,320px) minmax(0,1fr);gap:clamp(48px,6vw,80px)}
+  /* /artist: 왼쪽에 제목(ABOUT THE ARTIST / 박정은 / Artist & Educator), 오른쪽에 사진, 그 아래 전체 폭으로 본문 */
+  .artist-page .artist-layout{grid-template-columns:minmax(210px,290px) minmax(0,480px);grid-template-areas:"intro photo" "prose prose";justify-content:center;gap:clamp(60px,6vw,84px) clamp(40px,4vw,64px)}
+  .artist-page .artist-intro{grid-area:intro;align-self:center}
+  .artist-page .artist-photo{grid-area:photo}
+  .artist-page .artist-profile-copy{grid-area:prose}
   .facts-grid{grid-template-columns:1fr 1fr;gap:90px}
   .works-grid,.illustration-grid{grid-template-columns:repeat(4,minmax(0,1fr));align-items:start}
   .work-item:nth-child(even),.illustration-grid .illustration-item:nth-child(2),.illustration-grid .illustration-item:nth-child(3){margin-top:0}
@@ -404,6 +414,8 @@ body{letter-spacing:-.012em;text-rendering:optimizeLegibility}
   .illustration-cta .about-actions{flex-direction:column}
   .illustration-cta .about-actions .button{width:100%}
   .artist-photo{max-width:340px;margin-inline:auto}
+  .artist-page .artist-photo{max-width:460px;margin-inline:auto}
+  .artist-page .artist-lead{font-size:17px}
   .artist-profile .artist-name{margin:30px 0 45px}
 }
 
