@@ -287,7 +287,7 @@ body{letter-spacing:-.012em;text-rendering:optimizeLegibility}
 /* /artist · ABOUT THE ARTIST — 가로형 인물 사진(원본 1687x1020). 정사각 크롭 대신 원본 비율에 가깝게 담아 왜곡·얼굴 잘림 방지 */
 .artist-page .artist-intro{min-width:0}
 .artist-page .artist-intro .eyebrow{margin-bottom:40px}
-.artist-page .artist-lead{margin:0;font-size:19px;line-height:1.65;color:var(--ink)}
+.artist-page .artist-lead{margin:0;font-family:var(--serif);font-size:28px;font-weight:600;line-height:1.32;color:var(--ink)}
 .artist-page .artist-photo{max-width:100%;aspect-ratio:16/10}
 .facts-grid{display:grid;gap:70px}
 .facts-grid h2{margin-bottom:28px}
@@ -415,7 +415,7 @@ body{letter-spacing:-.012em;text-rendering:optimizeLegibility}
   .illustration-cta .about-actions .button{width:100%}
   .artist-photo{max-width:340px;margin-inline:auto}
   .artist-page .artist-photo{max-width:460px;margin-inline:auto}
-  .artist-page .artist-lead{font-size:17px}
+  .artist-page .artist-lead{font-size:22px;line-height:1.36}
   .artist-profile .artist-name{margin:30px 0 45px}
 }
 
@@ -1200,6 +1200,16 @@ body>.portfolio-site.shop-site{background:#faf6f0}
 @media (min-width:700px){
   .portfolio-site .home .section h2{font-size:clamp(28px,3.4vw,34px)}
   .home .portfolio-hero .hero-tagline{font-size:16px}
+  /* 데스크톱 전용: 히어로 + 섹션마다 제각각 가운데 정렬되던 콘텐츠를 공통 왼쪽 기준선으로 정돈.
+     좌우 여백·max-width·grid 배치는 그대로 두고, 폭이 좁아 auto-margin으로 가운데 밀리던
+     컨테이너만 section-inner(1200px 기준선)의 왼쪽 끝에 맞춥니다. */
+  .home .portfolio-hero{padding-left:24px;padding-right:24px}
+  .home .portfolio-hero .hero-content{max-width:none}
+  .selected-works-inner,
+  .home-community-inner,
+  .home-journal-inner,
+  .home-about .compact-feature,
+  .home-contact .compact-feature{margin-left:0}
   .home-community-body>p,.home-about p:not(.eyebrow),.home-artist .portfolio-copy p:not(.eyebrow){font-size:16px}
   .home-journal-lead{display:grid;grid-template-columns:1.08fr 1fr;gap:44px;align-items:center;margin-top:52px}
   .home-journal-lead-image{margin-bottom:0}

@@ -24,12 +24,13 @@ const SITE_URL = "https://bellavi-studio.com";
 const SITE_NAME = "BellaVi Studio";
 // 브랜드 방향: "좋아하는 것을 오래 잃지 않는 삶"
 const SITE_TITLE = "BellaVi Studio | 좋아하는 것을 오래 잃지 않는 삶";
-const SITE_DESCRIPTION = "그림을 그리고 배우며, 오래 좋아할 것을 발견하는 성인 아트 스튜디오입니다.";
-// public/images/illustration-vacation-og.jpg 를 사이트 전체 기본 공유 이미지로 사용합니다. (2:1 가로형)
+const SITE_DESCRIPTION = "그림을 그리고 배우며, 오래 좋아할 것을 발견하는 아트 스튜디오입니다.";
+// public/images/bellavi-og.jpg 를 사이트 전체 기본 공유 이미지로 사용합니다.
+// illustration-vacation-og-last.jpg(약 1200x639)를 원본 구도 그대로, 필요한 9px만 최소 크롭해 1200x630으로 만든 OG 전용 파일입니다.
 const OG_IMAGE = {
-  url: "/images/illustration-vacation-og.jpg",
-  width: 2273,
-  height: 1141,
+  url: "/images/bellavi-og.jpg",
+  width: 1200,
+  height: 630,
   alt: "BellaVi Studio — Art for a Beautiful Life",
   type: "image/jpeg"
 };

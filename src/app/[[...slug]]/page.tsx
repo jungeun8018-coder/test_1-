@@ -48,9 +48,9 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const path = slug && slug.length > 0 ? `/${slug.join("/")}` : "/";
   const { title, description } = pageDefinitions[page];
   const ogImage = {
-    url: "/images/illustration-vacation-og.jpg",
-    width: 2273,
-    height: 1141,
+    url: "/images/bellavi-og.jpg",
+    width: 1200,
+    height: 630,
     alt: "BellaVi Studio — Art for a Beautiful Life",
     type: "image/jpeg"
   };
