@@ -286,8 +286,10 @@ body{letter-spacing:-.012em;text-rendering:optimizeLegibility}
 .artist-profile .artist-name{margin-bottom:58px}
 /* /artist · ABOUT THE ARTIST — 가로형 인물 사진(원본 1687x1020). 정사각 크롭 대신 원본 비율에 가깝게 담아 왜곡·얼굴 잘림 방지 */
 .artist-page .artist-intro{min-width:0}
-.artist-page .artist-intro .eyebrow{margin-bottom:40px}
+.artist-page .artist-intro .eyebrow{margin-bottom:64px}
 .artist-page .artist-lead{margin:0;font-family:var(--serif);font-size:28px;font-weight:600;line-height:1.32;color:var(--ink)}
+/* ABOUT THE ARTIST 본문 문단을 WORK & THEMES 카드 설명(.practice-themes p)과 같은 톤으로: 작고 흐린 색 */
+.artist-page .artist-profile-copy .prose p{color:#7a6a5c;font-size:15px;line-height:1.75}
 .artist-page .artist-photo{max-width:100%;aspect-ratio:16/10}
 .facts-grid{display:grid;gap:70px}
 .facts-grid h2{margin-bottom:28px}
@@ -371,6 +373,10 @@ body{letter-spacing:-.012em;text-rendering:optimizeLegibility}
   .minimal-values article+article{padding-left:28px}
   .minimal-values article:last-child{border-right:0}
   .artist-layout{grid-template-columns:minmax(0,320px) minmax(0,1fr);gap:clamp(48px,6vw,80px)}
+  /* About · MEET THE ARTIST: 왼쪽에 텍스트 전체, 오른쪽에 인물 사진. 사진이 MEET THE ARTIST 시작선과 같은 줄에서 시작하도록 grid-row·정렬을 명시 */
+  #meet-the-artist .artist-layout{grid-template-columns:minmax(0,1fr) minmax(0,300px)}
+  #meet-the-artist .artist-photo{grid-column:2;grid-row:1;align-self:start}
+  #meet-the-artist .artist-profile-copy{grid-column:1;grid-row:1;align-self:start}
   /* /artist: 왼쪽에 제목(ABOUT THE ARTIST / 박정은 / Artist & Educator), 오른쪽에 사진, 그 아래 전체 폭으로 본문 */
   .artist-page .artist-layout{grid-template-columns:minmax(210px,290px) minmax(0,480px);grid-template-areas:"intro photo" "prose prose";justify-content:center;gap:clamp(60px,6vw,84px) clamp(40px,4vw,64px)}
   .artist-page .artist-intro{grid-area:intro;align-self:center}
