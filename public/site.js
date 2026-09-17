@@ -880,3 +880,42 @@ document.querySelectorAll('.copy-email').forEach((button) => {
     }
   });
 });
+
+// Shop: 엽서 상품 이미지 갤러리 — 인스타그램 여러 장 첨부처럼 "1/2" 표시를 누르면 다음 이미지로 넘어갑니다.
+document.querySelectorAll('.postcard-gallery').forEach((gallery) => {
+  const images = Array.from(gallery.querySelectorAll('[data-postcard-image]'));
+  const counter = gallery.querySelector('[data-postcard-counter]');
+  const currentOutput = gallery.querySelector('[data-postcard-current]');
+  if (!counter || !images.length) return;
+  let index = 0;
+  counter.addEventListener('click', () => {
+    index = (index + 1) % images.length;
+    images.forEach((image, position) => image.classList.toggle('is-active', position === index));
+    if (currentOutput) currentOutput.textContent = String(index + 1);
+  });
+});
+
+// Shop: 장바구니 담기 / 바로 구매 버튼 — 엽서 디자인 옵션 패널을 열고 닫습니다.
+document.querySelectorAll('[data-shop-toggle]').forEach((toggle) => {
+  toggle.addEventListener('click', () => {
+    const panel = document.getElementById(toggle.getAttribute('aria-controls') || '');
+    if (!panel) return;
+    const open = panel.hidden;
+    panel.hidden = !open;
+    document.querySelectorAll(`[aria-controls="${panel.id}"]`).forEach((button) => button.setAttribute('aria-expanded', String(open)));
+  });
+});
+
+// Shop: 옵션 패널에서 선택한 디자인 개수만큼 총 금액을 계산합니다.
+document.querySelectorAll('.shop-options').forEach((panel) => {
+  const checkboxes = panel.querySelectorAll('input[type="checkbox"]');
+  const totalOutput = panel.querySelector('[data-shop-total]');
+  const updateTotal = () => {
+    const total = Array.from(checkboxes)
+      .filter((checkbox) => checkbox.checked)
+      .reduce((sum, checkbox) => sum + Number(checkbox.dataset.price || 0), 0);
+    if (totalOutput) totalOutput.textContent = `${total.toLocaleString('ko-KR')}원`;
+  };
+  checkboxes.forEach((checkbox) => checkbox.addEventListener('change', updateTotal));
+  updateTotal();
+});
