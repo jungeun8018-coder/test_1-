@@ -6,6 +6,7 @@ import { metadataFor, pageDefinitions, type LegacyPageName } from "@/lib/legacy-
 
 const routes: Record<string, LegacyPageName> = {
   "": "index.html",
+  portfolio: "portfolio.html",
   about: "about.html",
   artist: "teacher.html",
   works: "works.html",

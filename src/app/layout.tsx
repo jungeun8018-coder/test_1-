@@ -1,10 +1,12 @@
 import type { Metadata } from "next";
+import Script from "next/script";
 import { Cormorant_Garamond, Noto_Sans_KR } from "next/font/google";
 
 import { SiteFooter } from "@/components/SiteFooter";
 import { SiteHeader } from "@/components/SiteHeader";
 
 import "./globals.css";
+import "./editorial.css";
 
 const serif = Cormorant_Garamond({
   subsets: ["latin"],
@@ -111,7 +113,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         <SiteHeader />
         {children}
         <SiteFooter />
-        <script src="/site.js" defer />
+        <Script src="/site.js" strategy="afterInteractive" />
       </body>
     </html>
   );

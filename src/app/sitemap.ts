@@ -19,6 +19,7 @@ type SitemapEntry = {
 
 const PAGES: SitemapEntry[] = [
   { path: "/", priority: 1.0, changeFrequency: "monthly" },
+  { path: "/portfolio", priority: 0.9, changeFrequency: "monthly" },
   { path: "/about", priority: 0.8, changeFrequency: "yearly" },
   { path: "/artist", priority: 0.7, changeFrequency: "yearly" },
   { path: "/works", priority: 0.8, changeFrequency: "monthly" },

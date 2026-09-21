@@ -6,6 +6,7 @@ import type { Metadata } from "next";
 
 export type LegacyPageName =
   | "index.html"
+  | "portfolio.html"
   | "about.html"
   | "teacher.html"
   | "works.html"
@@ -31,6 +32,11 @@ type PageDefinition = {
 };
 
 export const pageDefinitions: Record<LegacyPageName, PageDefinition> = {
+  "portfolio.html": {
+    title: "Portfolio | BellaVi Studio",
+    description: "박정은 작가의 Fine Art와 Illustration 작품, 그리고 작가 이야기",
+    bodyClass: "portfolio-site portfolio-gallery-page"
+  },
   "index.html": {
     title: "BellaVi Studio | 좋아하는 것을 오래 잃지 않는 삶",
     description: "그림을 그리고 배우며, 오래 좋아할 것을 발견하는 아트 스튜디오입니다.",
@@ -124,6 +130,7 @@ export const pageDefinitions: Record<LegacyPageName, PageDefinition> = {
 };
 
 const routeMap: Record<string, string> = {
+  "portfolio.html": "/portfolio",
   "index.html": "/",
   "about.html": "/about",
   "teacher.html": "/artist",
@@ -158,7 +165,7 @@ function mapHref(href: string): string {
 
 export function getLegacyMain(page: LegacyPageName): string {
   const filePath = join(process.cwd(), "src", "content", "legacy-pages", page);
-  const source = readFileSync(filePath, "utf8");
+  const source = readFileSync(filePath, "utf8").replace(/\r\n/g, "\n");
   const main = source.match(/<main\b[\s\S]*?<\/main>/i)?.[0];
 
   if (!main) throw new Error(`Could not find <main> in ${page}`);
