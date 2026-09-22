@@ -832,7 +832,12 @@ body{letter-spacing:-.012em;text-rendering:optimizeLegibility}
 .program-community-invite h2{margin-bottom:24px!important;font-size:clamp(30px,4vw,40px)!important}
 .program-community-invite p:not(.eyebrow){max-width:690px;margin-bottom:28px;color:#7a6a5c}
 .program-education{background:#fff}
-.program-education h2{margin-bottom:44px}
+.program-education-heading{max-width:800px;margin-bottom:48px}
+.program-education h2{margin-bottom:24px}
+.program-education-intro{margin-bottom:0;color:#7a6a5c;font-size:16px;line-height:1.9}
+.program-education .education-gallery{grid-template-columns:1fr;gap:32px}
+@media(min-width:700px){.program-education .education-gallery{grid-template-columns:repeat(2,minmax(0,1fr));gap:40px}}
+@media(min-width:960px){.program-education .education-gallery{grid-template-columns:repeat(3,minmax(0,1fr))}}
 
 .program-detail-duration{display:inline-block;margin:0 0 16px;padding:7px 12px;border:1px solid rgba(90,64,50,.28);color:var(--sage-dark);font-size:13px;font-weight:600;line-height:1.3;letter-spacing:.04em}
 .program-clarity-note{margin-top:42px!important;padding:25px 28px;border-left:2px solid var(--sage);background:#f6efe4;color:#3f4942}
