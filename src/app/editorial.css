@@ -31,7 +31,7 @@
 .quiet-link+.quiet-link{border-top:1px solid var(--line)}
 .quiet-link:focus-visible{outline:2px solid var(--sage-dark);outline-offset:2px}
 .portfolio-meet{margin-top:44px;scroll-margin-top:100px}
-.portfolio-meet>summary{display:flex;align-items:center;gap:18px;width:fit-content;margin-left:auto;padding:15px 30px;border:1px solid var(--sage-dark);border-radius:2px;color:var(--sage-dark);font:600 clamp(20px,2.2vw,26px)/1.3 var(--serif);list-style:none;cursor:pointer;transition:background .2s,color .2s}
+.portfolio-meet>summary{display:flex;align-items:center;gap:18px;width:fit-content;margin-left:auto;padding:15px 30px;border:1px solid var(--sage-dark);border-radius:2px;color:var(--sage-dark);font:500 clamp(20px,2.2vw,26px)/1.3 var(--serif);list-style:none;cursor:pointer;transition:background .2s,color .2s}
 .portfolio-meet>summary::-webkit-details-marker{display:none}
 .portfolio-meet>summary:focus-visible{outline:2px solid var(--sage-dark);outline-offset:5px}
 .portfolio-meet[open]>summary{background:var(--sage-dark);color:#fff}
