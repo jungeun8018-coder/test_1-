@@ -18,9 +18,9 @@ export function SiteFooter() {
                 </svg>
               </a>
               <a className="footer-social-icon" href="https://blog.naver.com/jungeun__art" target="_blank" rel="noopener noreferrer" aria-label="Naver Blog">
-                <svg className="footer-blog-badge" viewBox="0 0 32 24" width="30" height="22" fill="none" aria-hidden="true" focusable="false">
-                  <rect x="3" y="3" width="26" height="18" rx="5" stroke="currentColor" strokeWidth="1.6" />
-                  <text x="16" y="12.5" textAnchor="middle" dominantBaseline="middle" fill="currentColor">blog</text>
+                <svg className="footer-blog-badge" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden="true" focusable="false">
+                  <rect x="3" y="3" width="18" height="18" rx="5" />
+                  <text x="12" y="12.6" textAnchor="middle" dominantBaseline="middle" fill="currentColor" stroke="none">bl</text>
                 </svg>
               </a>
             </nav>

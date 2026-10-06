@@ -11,13 +11,17 @@
 .portfolio-hero .hero-art{background:#65705f;z-index:0}
 .portfolio-hero [data-season-image],.portfolio-hero [data-season-image-layer]{position:absolute;inset:0;opacity:0;transition:opacity 1s ease-in-out;will-change:opacity}
 .portfolio-hero [data-season-image].season-image-ready,.portfolio-hero [data-season-image-layer].season-image-ready{opacity:1}
-/* 봄 Hero 3레이어: (배경) 창밖 풍경 → (.hero-fx) 떨어지는 벚꽃 → (.hero-foreground) 창틀+실내(창유리 true 투명).
+/* 봄·가을·겨울 Hero 3레이어: (배경) 창밖 풍경(계절별 outdoor 이미지) → (.hero-fx) 계절 애니메이션(벚꽃·낙엽·눈) →
+   (.hero-foreground) 창틀+실내(창유리 true 투명, 공통 1장). 여름은 창틀까지 구워진 완성 이미지라 foreground를 쓰지 않습니다.
    .hero-foreground는 .hero-art img 규칙으로 배경과 동일한 object-fit:cover·object-position 크롭을 공유해
-   화면 폭이 달라져도 픽셀 단위로 정렬되고, 불투명한 창틀/실내가 벚꽃을 가려 벚꽃은 창유리 안에서만 보입니다.
-   창밖 풍경 이미지에는 창틀이 없으므로 창틀이 2겹으로 겹치지 않습니다. */
+   화면 폭이 달라져도 픽셀 단위로 정렬되고, 불투명한 창틀/실내가 애니메이션을 가려 창유리 안에서만 보입니다.
+   계절마다 .hero-fx가 따로 있어(각 data-fx) 서로의 타이머·DOM을 건드리지 않습니다. */
 .portfolio-hero .hero-fx{position:absolute;inset:0;z-index:1;overflow:hidden;pointer-events:none;opacity:0;transition:opacity 1s ease-in-out}
 .portfolio-hero .hero-foreground{position:absolute;inset:0;z-index:2;opacity:0;transition:opacity 1s ease-in-out;pointer-events:none;will-change:opacity}
-.portfolio-hero[data-active-season="spring"] .hero-fx,.portfolio-hero[data-active-season="spring"] .hero-foreground{opacity:1}
+.portfolio-hero[data-active-season]:not([data-active-season="summer"]) .hero-foreground{opacity:1}
+.portfolio-hero[data-active-season="spring"] .hero-fx[data-fx="spring"],
+.portfolio-hero[data-active-season="autumn"] .hero-fx[data-fx="autumn"],
+.portfolio-hero[data-active-season="winter"] .hero-fx[data-fx="winter"]{opacity:1}
 .hero-art:after{inset:0;width:auto;height:auto;right:0;bottom:0;z-index:3;border-radius:0;background:linear-gradient(90deg,rgba(45,32,24,.68),rgba(60,46,36,.12));filter:none}
 .responsive-image{display:block;width:100%;height:100%;object-fit:cover}
 .portrait-placeholder{padding:0;background:#d7cbb6}
@@ -25,7 +29,7 @@
 .footer-links a{color:inherit;opacity:.82;transition:opacity .2s}
 .footer-links .footer-social-icon{display:inline-flex;align-items:center;justify-content:center;min-width:32px;min-height:32px}
 .footer-social-icon svg{display:block}
-.footer-blog-badge{font-size:10px;font-weight:600}
+.footer-blog-badge{font-size:9.5px;font-weight:600;letter-spacing:-.01em}
 .footer-links .footer-social-icon:focus-visible{outline:1px solid currentColor;outline-offset:4px;border-radius:3px}
 .footer-links a:hover,.footer-links a:focus-visible{opacity:1;text-decoration:underline;text-underline-offset:4px}
 .site-footer .footer-credit{font-size:12px;letter-spacing:.03em;color:rgba(248,245,237,.6)}
@@ -544,11 +548,13 @@ body{letter-spacing:-.012em;text-rendering:optimizeLegibility}
 .summer-highlight-glint::before,.summer-highlight-glint::after{content:"";position:absolute;pointer-events:none}
 .summer-highlight-glint::before{top:calc(50% - .5px);left:-55%;width:210%;height:1px;background:linear-gradient(90deg,transparent,rgba(255,252,225,.18) 18%,rgba(255,255,244,.95) 50%,rgba(255,237,181,.18) 82%,transparent)}
 .summer-highlight-glint::after{top:-55%;left:calc(50% - .5px);width:1px;height:210%;background:linear-gradient(180deg,transparent,rgba(255,248,209,.16) 18%,rgba(255,255,245,.92) 50%,rgba(255,230,166,.16) 82%,transparent)}
-.season-particle{position:absolute;display:block;width:var(--size);height:auto;opacity:0;will-change:transform,opacity;user-select:none}
+/* .hero-art img{width:100%;height:100%} 보다 더 구체적인 선택자로 덮어써야, 낙엽·눈송이
+   이미지가 창문 전체 크기로 늘어나지 않고 --size로 지정한 작은 크기로 보입니다. */
+.hero-fx .season-particle{position:absolute;display:block;width:var(--size);height:auto;opacity:0;will-change:transform,opacity;user-select:none}
 .spring-fall{position:absolute;top:var(--top);left:var(--left);width:var(--size);opacity:0;will-change:transform,opacity;animation:springFall var(--duration) cubic-bezier(.35,.05,.65,.95) var(--delay) forwards}
 .spring-petal{display:block;width:100%;height:auto;will-change:transform;user-select:none;animation:springSway var(--sway-duration) ease-in-out infinite alternate}
-.autumn-leaf{top:var(--top);left:var(--left);animation:fallRotate var(--duration) cubic-bezier(.25,.48,.38,1) var(--delay) forwards}
-.winter-snowflake{top:-7%;left:var(--left);animation:snow var(--duration) linear forwards}
+.autumn-leaf{top:var(--top);left:var(--left);filter:saturate(1.55);animation:fallRotate var(--duration) cubic-bezier(.35,.05,.65,.95) var(--delay) forwards}
+.hero-fx .winter-canvas{position:absolute;inset:0;display:block;width:100%;height:100%}
 
 @keyframes springFall{
   0%{opacity:0;transform:translate3d(0,-8px,0)}
@@ -592,17 +598,13 @@ body{letter-spacing:-.012em;text-rendering:optimizeLegibility}
   51%{opacity:1;transform:translate3d(-50%,-50%,0) scale(1.04) rotate(10deg)}
   55%{opacity:.3;transform:translate3d(-50%,-50%,0) scale(.7) rotate(17deg)}
 }
+/* 낙엽·눈송이 이미지는 수정 전 애니메이션에서 추출한(이미 원래 투명도로 섞인) 색이라,
+   거의 그대로의 진하기로 보여야 수정 전과 같은 모습이 됩니다. */
 @keyframes fallRotate{
   0%{opacity:0;transform:translate3d(0,-8px,0) rotate(var(--rotate-start))}
-  10%{opacity:.66}
-  82%{opacity:.55}
+  10%{opacity:.78}
+  85%{opacity:.7}
   100%{opacity:0;transform:translate3d(var(--drift,0),62vh,0) rotate(var(--rotate-end))}
-}
-@keyframes snow{
-  0%{opacity:0;transform:translate3d(0,-6px,0) rotate(var(--rotate-start))}
-  14%{opacity:.64}
-  82%{opacity:.52}
-  100%{opacity:0;transform:translate3d(var(--drift),67vh,0) rotate(var(--rotate-end))}
 }
 
 @media (max-width:699px){

@@ -270,10 +270,16 @@ class SeasonEffect {
     this.timers.add(timer);
   }
 
-  particle(className, styles = {}) {
+  /* 원래 합성 애니메이션(1536×1024 원본 기준)과 같은 크기로 보이도록, 배경 사진이
+     object-fit:cover로 확대·축소되는 배율을 그대로 곱해 줍니다. */
+  coverScale() {
+    return Math.max(this.root.clientWidth / 1536, this.root.clientHeight / 1024) || 1;
+  }
+
+  particle(className, styles = {}, asset = this.asset) {
     const image = document.createElement('img');
     image.className = `season-particle ${className}`;
-    image.src = this.asset;
+    image.src = asset;
     image.alt = '';
     image.setAttribute('aria-hidden', 'true');
     Object.entries(styles).forEach(([name, value]) => image.style.setProperty(name, value));
@@ -294,16 +300,16 @@ class SeasonEffect {
 
 class SpringEffect extends SeasonEffect {
   start() {
-    /* 화사한 봄 느낌이 나도록 꽃잎을 촘촘히(이전 대비 약 2배) 뿌리되, 시작 지연에 흔들림을
-       줘서 한꺼번에 쏟아지는 느낌은 피합니다. */
-    [0, 200, 400, 650, 900, 1150, 1400, 1700, 2000, 2300, 2650, 3000,
-      3400, 3800, 4200, 4650, 5100, 5600, 6100, 6600, 7100, 7700, 8300, 9000]
-      .forEach((delay) => this.spawn(delay + this.random(0, 350)));
+    /* 화사한 봄 느낌이 더 나도록 꽃잎을 촘촘히(이전 대비 다시 2~3배) 뿌리되, 시작 지연에 흔들림을
+       줘서 한꺼번에 쏟아지는 느낌은 피합니다. 계절은 6초만 보이므로 처음 2초 안에 밀도가 차오르게 합니다. */
+    for (let i = 0; i < 32; i += 1) {
+      this.spawn(i * 60 + this.random(0, 70));
+    }
   }
 
   spawn(delay = 0) {
-    if (this.root.querySelectorAll('.spring-fall').length >= 32) {
-      this.schedule(() => this.spawn(), this.random(500, 1100));
+    if (this.root.querySelectorAll('.spring-fall').length >= 70) {
+      this.schedule(() => this.spawn(), this.random(200, 480));
       return;
     }
     const duration = this.random(9, 12);
@@ -336,7 +342,7 @@ class SpringEffect extends SeasonEffect {
     fall.addEventListener('animationend', () => fall.remove(), { once: true });
     this.root.append(fall);
     /* 다음 꽃잎을 이전 꽃잎이 다 떨어질 때까지 기다리지 않고 꾸준히 이어서 뿌립니다. */
-    this.schedule(() => this.spawn(), this.random(450, 1050));
+    this.schedule(() => this.spawn(), this.random(180, 420));
   }
 }
 
@@ -440,58 +446,163 @@ class SummerEffect extends SeasonEffect {
   }
 }
 
+/* 수정 전 가을 애니메이션에서 그대로 추출한 낙엽들(원본 1536px 기준 가로 크기와 함께). */
+const AUTUMN_LEAVES = [
+  ['01', 21], ['02', 21], ['03', 20], ['04', 17], ['05', 15], ['06', 25],
+  ['07', 26], ['09', 18], ['10', 18], ['11', 16], ['12', 18],
+].map(([id, width]) => ({ src: `/images/season-leaf-original-${id}.png`, width }));
+
 class AutumnEffect extends SeasonEffect {
   start() {
-    this.zone = Math.floor(this.random(0, 6));
-    [0, 1200, 2400, 3600, 4800, 6000].forEach((delay) => this.spawn(delay + this.random(0, 500)));
+    /* 낙엽 양은 수정 전(한 화면에 약 12장)의 3배: 가로 영역을 18구간으로 나눠 거의 동시에
+       시작하고 끊김 없이 보충합니다. 계절은 6초만 보이므로 처음 1~2초 안에 밀도가 차오르게 합니다. */
+    /* 가을이 보이는 첫 순간부터 창 전체에 낙엽이 떨어지고 있도록, 처음 30장은 낙하 도중의
+       위치(음수 지연)에서 시작합니다. 그 뒤로는 위에서 계속 새 낙엽이 이어집니다. */
+    this.zone = 0;
+    for (let i = 0; i < 30; i += 1) this.spawn(true);
+    this.schedule(() => this.spawn(), this.random(300, 700));
   }
 
-  spawn(delay = 0) {
+  spawn(prefill = false) {
+    if (this.root.querySelectorAll('.autumn-leaf').length >= 36) {
+      this.schedule(() => this.spawn(), this.random(300, 700));
+      return;
+    }
+    const leaf = AUTUMN_LEAVES[Math.floor(Math.random() * AUTUMN_LEAVES.length)];
     const rotation = this.random(-90, 90);
-    const duration = this.random(8, 14);
+    const duration = this.random(10.5, 13.5);
     const direction = Math.random() < .5 ? -1 : 1;
-    const zoneWidth = 100 / 6;
-    const left = this.zone * zoneWidth + this.random(2, zoneWidth - 2);
-    this.zone = (this.zone + 1) % 6;
+    const zoneWidth = 100 / 18;
+    const left = this.zone * zoneWidth + this.random(1, zoneWidth - 1);
+    this.zone = (this.zone + 1) % 18;
     this.particle('autumn-leaf', {
-      '--size': `${this.random(10.5, 16.5)}px`,
+      '--size': `${leaf.width * (2 / 3) * this.coverScale() * this.random(.92, 1.08)}px`,
       '--top': `${this.random(-4, 10)}%`,
       '--left': `${left}%`,
       '--duration': `${duration}s`,
-      '--delay': `${delay}ms`,
+      '--delay': prefill ? `${-this.random(0, duration * .85)}s` : '0ms',
       /* 벚꽃보다 좌우로 더 흔들리며 떨어지도록 drift 폭을 크게 줍니다. */
       '--drift': `${this.random(3.5, 7) * direction}vw`,
       '--rotate-start': `${-rotation / 2}deg`,
       '--rotate-end': `${rotation}deg`,
-    });
-    this.schedule(() => this.spawn(), delay + duration * 1000 + this.random(1800, 4200));
+    }, leaf.src);
+    if (!prefill) this.schedule(() => this.spawn(), this.random(300, 700));
   }
 }
 
 class WinterEffect extends SeasonEffect {
-  start() {
-    this.zone = Math.floor(this.random(0, 8));
-    [0, 450, 900, 1350, 1800, 2250, 2700, 3150].forEach((delay) => this.schedule(() => this.spawn(), delay + this.random(0, 300)));
+  /* 겨울은 네 계절 중 눈이 가장 많이 내리는 폭설 장면: 데스크톱 기준 한 화면에 최대 760개.
+     눈송이가 이렇게 많으면 하나하나를 화면 요소로 움직일 때 끊겨 보이므로, 겨울만
+     캔버스 한 장에 직접 그립니다. 모양·크기·속도·흔들림·회전·나타나고 사라지는 투명도는
+     기존 눈송이(낙하 10~13초 동안 창 위 -7%에서 67vh 아래까지)와 같습니다. */
+  setEnabled(enabled) {
+    if (this.enabled !== enabled && this.frame) {
+      window.cancelAnimationFrame(this.frame);
+      this.frame = null;
+    }
+    super.setEnabled(enabled);
   }
 
-  spawn() {
-    if (this.root.querySelectorAll('.winter-snowflake').length >= 8) {
-      this.schedule(() => this.spawn(), this.random(2000, 5000));
-      return;
-    }
-    const rotation = this.random(-30, 30);
-    const zoneWidth = 11;
-    const left = this.zone * zoneWidth + this.random(1.5, zoneWidth - 1.5);
-    this.zone = (this.zone + 1) % 8;
-    this.particle('winter-snowflake', {
-      '--size': `${this.random(7.5, 15)}px`,
-      '--left': `${left}%`,
-      '--duration': `${this.random(13, 18)}s`,
-      '--drift': `${this.random(-2, 2)}vw`,
-      '--rotate-start': `${-rotation}deg`,
-      '--rotate-end': `${rotation}deg`,
+  start() {
+    this.canvas = document.createElement('canvas');
+    this.canvas.className = 'winter-canvas';
+    this.root.append(this.canvas);
+    this.context = this.canvas.getContext('2d');
+    this.sprites = [1, 2, 3, 4, 5, 6].map((index) => {
+      const image = new Image();
+      image.src = `/images/season-snow-0${index}.png`;
+      return image;
     });
-    this.schedule(() => this.spawn(), this.random(2000, 5000));
+    this.resize();
+    this.zone = 0;
+    /* 화면(히어로) 넓이에 비례해 개수를 정해, 작은 모바일 화면에서도 같은 밀도의 폭설로
+       보이면서 기기 부담은 줄입니다. */
+    const area = this.width * this.height;
+    this.density = Math.min(1, Math.max(.4, area / (1440 * 820)));
+    this.maxFlakes = Math.round(760 * this.density);
+    this.spawnPerSecond = 92 * this.density;
+    this.spawnCredit = 0;
+    /* 겨울이 보이는 첫 순간부터 창 전체에 눈이 내리고 있도록, 처음 600개(데스크톱 기준)는
+       낙하 도중의 위치에서 시작합니다. 그 뒤로는 위에서 계속 새 눈이 이어집니다. */
+    this.flakes = [];
+    for (let i = 0; i < Math.round(600 * this.density); i += 1) this.flakes.push(this.createFlake(true));
+    this.lastTime = performance.now();
+    this.frame = window.requestAnimationFrame((time) => this.tick(time));
+  }
+
+  resize() {
+    const ratio = Math.min(window.devicePixelRatio || 1, 2);
+    this.width = this.root.clientWidth;
+    this.height = this.root.clientHeight;
+    this.canvas.width = Math.round(this.width * ratio);
+    this.canvas.height = Math.round(this.height * ratio);
+    this.ratio = ratio;
+  }
+
+  createFlake(prefill = false) {
+    const zoneWidth = 5;
+    const left = this.zone * zoneWidth + this.random(1, zoneWidth - 1);
+    this.zone = (this.zone + 1) % 20;
+    /* 실제 눈처럼 모양이 제각각인 부드러운 눈송이(6종). 대부분은 작은 눈(원본 기준 지름
+       3.5~5.5px)이고, 약 5개 중 1개는 벚꽃·낙엽만 한 큰 함박눈(지름 7~10px)이 섞입니다.
+       스프라이트 여백을 감안해 1.6배로 지정합니다. */
+    const isLarge = Math.random() < .2;
+    const duration = this.random(8, 13);
+    const rotation = this.random(-60, 60) * Math.PI / 180;
+    return {
+      sprite: this.sprites[Math.floor(Math.random() * this.sprites.length)],
+      size: (isLarge ? this.random(7, 10) : this.random(3.5, 5.5)) * 1.6 * this.coverScale(),
+      left: left / 100,
+      duration,
+      age: prefill ? this.random(0, duration * .85) : 0,
+      drift: this.random(-2, 2) / 100 * window.innerWidth,
+      fall: .67 * window.innerHeight + 6,
+      rotateStart: -rotation,
+      rotateEnd: rotation,
+    };
+  }
+
+  /* 기존 CSS 키프레임과 같은 투명도 곡선: 0% → 12% .95 → 85% .9 → 100% 0 */
+  opacityAt(progress) {
+    if (progress < .12) return .95 * progress / .12;
+    if (progress < .85) return .95 - .05 * (progress - .12) / .73;
+    return .9 * (1 - (progress - .85) / .15);
+  }
+
+  tick(time) {
+    if (!this.enabled) return;
+    const elapsed = Math.min((time - this.lastTime) / 1000, .1);
+    this.lastTime = time;
+    if (this.root.clientWidth !== this.width || this.root.clientHeight !== this.height) this.resize();
+
+    this.spawnCredit += elapsed * this.spawnPerSecond;
+    while (this.spawnCredit >= 1) {
+      this.spawnCredit -= 1;
+      if (this.flakes.length < this.maxFlakes) this.flakes.push(this.createFlake());
+    }
+
+    const { context, ratio } = this;
+    context.setTransform(1, 0, 0, 1, 0, 0);
+    context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    const top = -.07 * this.height - 6;
+    this.flakes = this.flakes.filter((flake) => {
+      flake.age += elapsed;
+      const progress = flake.age / flake.duration;
+      if (progress >= 1) return false;
+      if (!flake.sprite.complete) return true;
+      const half = flake.size / 2;
+      const x = flake.left * this.width + flake.drift * progress + half;
+      const y = top + flake.fall * progress + half;
+      const angle = flake.rotateStart + (flake.rotateEnd - flake.rotateStart) * progress;
+      const cos = Math.cos(angle) * ratio;
+      const sin = Math.sin(angle) * ratio;
+      context.setTransform(cos, sin, -sin, cos, x * ratio, y * ratio);
+      context.globalAlpha = this.opacityAt(progress);
+      context.drawImage(flake.sprite, -half, -half, flake.size, flake.size);
+      return true;
+    });
+    context.globalAlpha = 1;
+    this.frame = window.requestAnimationFrame((next) => this.tick(next));
   }
 }
 
@@ -503,21 +614,35 @@ function initSeasonEffects() {
   const validSeasons = ['spring', 'summer', 'autumn', 'winter'];
   const previewSeason = new URLSearchParams(window.location.search).get('season');
   let activeSeason = validSeasons.includes(previewSeason) ? previewSeason : 'spring';
-  /* 봄만 '창밖 풍경(창틀 없음)'을 배경으로 깔고, 그 위에 떨어지는 벚꽃(.hero-fx)과
-     창틀+실내 foreground(.hero-foreground, 창유리 true 투명)를 레이어로 얹습니다.
-     여름/가을/겨울은 완성 이미지를 그대로 사용합니다. */
+  /* 봄·가을·겨울: '창밖 풍경(창틀 없음)' 배경 + 계절 애니메이션(.hero-fx) +
+     창틀+실내 foreground(.hero-foreground, 창유리 true 투명) 레이어.
+     여름: 새와 반짝임이 함께 구워진 원래 완성 이미지를 그대로 쓰되, 파일의 반복 횟수를 1로
+     바꿔 가을로 바뀌기 전까지 한 번만 재생됩니다. */
   const seasonImages = {
     spring: '/images/bellavi-studio-outdoor-spring.webp',
     summer: '/images/bellavi-summer-final-layer-composite.webp',
-    autumn: '/images/bellavi-autumn-clean-table-preview.webp',
-    winter: '/images/bellavi-winter-three-layers-preview-v3.webp',
+    autumn: '/images/bellavi-autumn-outdoor.webp',
+    winter: '/images/bellavi-winter-outdoor.webp',
   };
   /* WebP를 지원하지 않는 환경 대체본. 봄은 3레이어가 하나로 구워진 완성 GIF를 사용합니다. */
   const seasonImagesFallback = {
     spring: '/images/bellavi-spring-horizontal-mullions-clean.gif',
     summer: '/images/bellavi-summer-final-layer-composite.gif',
-    autumn: '/images/bellavi-autumn-clean-table-preview.gif',
-    winter: '/images/bellavi-winter-three-layers-preview-v3.gif',
+  };
+
+  /* 한 번만 재생되는 여름 이미지는 같은 주소를 다시 쓰면 이미 끝난 마지막 장면에 멈춰
+     있으므로, 여름이 돌아올 때마다 새 blob 주소를 만들어 처음부터 한 번 재생합니다. */
+  let summerBlob;
+  let summerObjectUrl;
+  const freshSummerSource = async () => {
+    try {
+      summerBlob ??= await (await fetch(seasonImages.summer)).blob();
+      if (summerObjectUrl) URL.revokeObjectURL(summerObjectUrl);
+      summerObjectUrl = URL.createObjectURL(summerBlob);
+      return summerObjectUrl;
+    } catch {
+      return seasonImages.summer;
+    }
   };
   const firstImage = hero.querySelector('[data-season-image]');
   if (!firstImage) return;
@@ -538,14 +663,20 @@ function initSeasonEffects() {
   effects.append(windowArea);
   hero.querySelector('.hero-art')?.after(effects);
 
-  // 봄: 창밖 풍경(배경)과 창틀(.hero-foreground) 사이에서 벚꽃이 떨어지는 레이어.
-  // .hero-fx는 .hero-art 안 z-index:1이라 불투명한 창틀/실내(.hero-foreground)가 창밖 영역을 뺀
-  // 나머지를 덮어, 화면 크기와 무관하게 벚꽃이 창유리 안에서만 보입니다(별도 좌표 보정 불필요).
-  // 여름/가을/겨울은 완성 이미지를 그대로 쓰므로 효과 레이어가 없습니다.
-  const heroFx = hero.querySelector('.hero-fx');
-  const components = heroFx
-    ? [new SpringEffect(heroFx, { asset: '/images/season-petal.png' })]
-    : [];
+  // 창밖 풍경(배경)과 창틀(.hero-foreground) 사이, 계절마다 따로 있는 .hero-fx 레이어에서
+  // 애니메이션이 움직입니다. z-index:1이라 불투명한 창틀/실내(.hero-foreground)가 창밖 영역을
+  // 뺀 나머지를 덮어, 화면 크기와 무관하게 애니메이션이 창유리 안에서만 보입니다(별도 좌표
+  // 보정 불필요). 계절별로 컨테이너가 분리돼 있어 서로의 타이머·DOM을 건드리지 않습니다.
+  // 여름은 완성 이미지 자체에 애니메이션이 들어 있어 효과 레이어가 없습니다.
+  const effectFactories = {
+    spring: (root) => new SpringEffect(root, { asset: '/images/season-petal.png' }),
+    autumn: (root) => new AutumnEffect(root),
+    winter: (root) => new WinterEffect(root),
+  };
+  const components = validSeasons.map((season) => {
+    const root = hero.querySelector(`.hero-fx[data-fx="${season}"]`);
+    return root && effectFactories[season] ? effectFactories[season](root) : null;
+  });
 
   let visibleImage = firstImage;
   let hiddenImage = secondImage;
@@ -553,6 +684,8 @@ function initSeasonEffects() {
   let isChanging = false;
   const seasonDuration = 6000;
   const transitionDuration = 1000;
+  /* 여름은 새가 창틀 뒤로 완전히 사라질 때까지(약 5.9초) 보여준 뒤 가을로 넘어갑니다. */
+  const durationFor = (season) => (season === 'summer' ? 7000 : seasonDuration);
 
   const heroArt = hero.querySelector('.hero-art');
 
@@ -610,14 +743,15 @@ function initSeasonEffects() {
     hero.dataset.activeSeason = season;
     updateWindowRect();
     components.forEach((component, index) => {
-      component.setEnabled(!reducedMotion.matches && validSeasons[index] === season);
+      component?.setEnabled(!reducedMotion.matches && validSeasons[index] === season);
     });
   };
 
   const loadSeasonImage = async (image, season) => {
     image.classList.remove('season-image-ready');
     /* WebP를 먼저 시도하고, 로드에 실패하면 같은 계절의 GIF로 대체합니다. */
-    const sources = [seasonImages[season], seasonImagesFallback[season]].filter(Boolean);
+    const primary = season === 'summer' ? await freshSummerSource() : seasonImages[season];
+    const sources = [primary, seasonImagesFallback[season]].filter(Boolean);
     for (let i = 0; i < sources.length; i += 1) {
       image.src = sources[i];
       const loaded = (image.complete && image.naturalWidth > 1) || await new Promise((resolve) => {
@@ -633,7 +767,7 @@ function initSeasonEffects() {
     }
   };
 
-  const scheduleNextSeason = (delay = seasonDuration) => {
+  const scheduleNextSeason = (delay = durationFor(activeSeason)) => {
     window.clearTimeout(rotationTimer);
     if (!reducedMotion.matches) rotationTimer = window.setTimeout(showNextSeason, delay);
   };
@@ -653,7 +787,7 @@ function initSeasonEffects() {
     }
     [visibleImage, hiddenImage] = [hiddenImage, visibleImage];
     isChanging = false;
-    scheduleNextSeason(isManual ? seasonDuration : seasonDuration - transitionDuration);
+    scheduleNextSeason(isManual ? durationFor(nextSeason) : durationFor(nextSeason) - transitionDuration);
   };
 
   const showNextSeason = () => changeSeason(1);
@@ -671,7 +805,7 @@ function initSeasonEffects() {
 
   reducedMotion.addEventListener('change', ({ matches }) => {
     window.clearTimeout(rotationTimer);
-    components.forEach((component, index) => component.setEnabled(!matches && validSeasons[index] === activeSeason));
+    components.forEach((component, index) => component?.setEnabled(!matches && validSeasons[index] === activeSeason));
     if (!matches) scheduleNextSeason();
   });
 
