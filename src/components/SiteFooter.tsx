@@ -5,10 +5,11 @@ export function SiteFooter() {
     <>
       <footer className="site-footer">
         <div className="footer-inner">
-          <div>
+          <div className="footer-brand">
             <FullReloadLink className="logo" href="/">BellaVi <span>Studio</span></FullReloadLink>
-            <p>좋아하는 것을 오래 잃지 않는 삶</p>
-            <p className="footer-credit">Designed &amp; Illustrated by Park Jungeun</p>
+            <p className="footer-tagline">좋아하는 것을 오래 잃지 않는 삶</p>
+          </div>
+          <div className="footer-meta">
             <nav className="footer-links" aria-label="연락 및 채널">
               <a className="footer-social-icon" href="https://instagram.com/jungeun__illust" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
                 <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden="true" focusable="false">
@@ -24,8 +25,8 @@ export function SiteFooter() {
                 </svg>
               </a>
             </nav>
+            <p className="footer-credit">Designed &amp; Illustrated by Park Jungeun</p>
           </div>
-          <p>© 2026 BellaVi Studio</p>
         </div>
       </footer>
       <button className="back-to-top" type="button" aria-label="맨 위로 이동">↑</button>
