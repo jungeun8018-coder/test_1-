@@ -952,8 +952,8 @@ a.shop-buy-button{display:inline-flex;align-items:center;justify-content:center;
 .postcard-gallery{position:absolute;inset:0}
 .postcard-gallery img{position:absolute;inset:0;display:block;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .4s ease}
 .postcard-gallery img.is-active{opacity:1}
-/* 두 번째 이미지는 안의 번호가 잘리면 안 되므로 자르지 않고 전체가 보이도록 둡니다. */
-.postcard-gallery img[data-postcard-image="1"]{object-fit:contain;background:#e8e3da}
+/* 세로 사진(1·3번째)은 엽서가 잘리지 않도록 자르지 않고 전체가 보이도록 둡니다. */
+.postcard-gallery img[data-postcard-image="0"],.postcard-gallery img[data-postcard-image="2"]{object-fit:contain;background:#e8e3da}
 .postcard-gallery-counter{position:absolute;z-index:2;right:12px;bottom:12px;display:flex;align-items:center;gap:1px;padding:5px 12px;border:0;border-radius:99px;background:rgba(20,18,16,.55);color:#fff;font-size:12px;font-weight:600;letter-spacing:.02em;cursor:pointer;backdrop-filter:blur(2px);transition:background .2s}
 .postcard-gallery-counter:hover{background:rgba(20,18,16,.75)}
 
