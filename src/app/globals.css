@@ -1250,6 +1250,11 @@ body>.portfolio-site.shop-site{background:#faf6f0}
 .home .home-link>span:last-child{transition:transform .25s ease}
 .home .home-link:hover,.home .home-link:focus-visible{border-color:rgba(140,74,50,.9);color:#6f3827}
 .home .home-link:hover>span:last-child,.home .home-link:focus-visible>span:last-child{transform:translateX(4px)}
+/* 홈 첫 화면의 엽서 구매 버튼은 눈에 띄도록 채워진 버튼으로 표시합니다. */
+.home .home-shop-cta{display:inline-flex;align-items:center;gap:10px;margin-top:28px;padding:15px 30px;border-radius:999px;background:var(--sage-dark);color:#fff;font:600 15px/1.4 var(--sans);letter-spacing:.03em;text-decoration:none;box-shadow:0 8px 22px rgba(111,56,39,.22);transition:background .2s,transform .2s,box-shadow .2s}
+.home .home-shop-cta>span:last-child{transition:transform .25s ease}
+.home .home-shop-cta:hover,.home .home-shop-cta:focus-visible{background:#6f3827;transform:translateY(-2px);box-shadow:0 12px 26px rgba(111,56,39,.3)}
+.home .home-shop-cta:hover>span:last-child,.home .home-shop-cta:focus-visible>span:last-child{transform:translateX(4px)}
 
 /* section rhythm + heading scale (tighter, age-agnostic) */
 .portfolio-site .home .section{padding:clamp(56px,8vw,76px) 24px}
