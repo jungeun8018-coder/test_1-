@@ -894,6 +894,19 @@ a.shop-buy-button{display:inline-flex;align-items:center;justify-content:center;
 .shop-options-total strong{color:var(--sage-dark);font-family:var(--serif);font-size:21px}
 .shop-status{margin:10px 0 0;color:#858b86;font-size:12px}
 .shop-detail-link{margin-top:18px;font-size:14px}
+#art-postcard{align-items:start}
+#art-postcard .shop-copy{max-width:470px;padding-top:6px}
+#art-postcard .shop-korean-title{margin-bottom:22px;line-height:1.6}
+#art-postcard .shop-description{margin-bottom:34px;font-size:15.5px;line-height:2;color:#5c6159}
+.shop-set-options{display:grid;gap:12px;margin:0 0 32px;padding:0;list-style:none}
+.shop-set-options li{display:grid;grid-template-columns:28px 1fr;gap:12px;padding:18px 20px;border:1px solid var(--line);border-radius:14px;background:#faf6f0}
+.shop-set-no{display:flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:50%;background:var(--sage-dark);color:#fff;font-size:13px;font-weight:600}
+.shop-set-options p{margin:0}
+.shop-set-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-bottom:6px!important}
+.shop-set-head strong{color:var(--ink);font-size:16px;font-weight:600}
+.shop-set-head em{color:var(--sage-dark);font-style:normal;font-size:16px;font-weight:600;white-space:nowrap}
+.shop-set-items{color:#586159;font-size:14px;line-height:1.75}
+.shop-set-choice{margin-top:6px!important;color:var(--sage-dark);font-size:13px;line-height:1.7}
 .shop-detail{background:#fff;border-top:1px solid var(--line)}
 .shop-detail-inner{width:min(100%,820px);margin:auto}
 .shop-detail-intro{margin-bottom:80px;text-align:center}
@@ -952,8 +965,8 @@ a.shop-buy-button{display:inline-flex;align-items:center;justify-content:center;
 .postcard-gallery{position:absolute;inset:0}
 .postcard-gallery img{position:absolute;inset:0;display:block;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .4s ease}
 .postcard-gallery img.is-active{opacity:1}
-/* 세로 사진(1·3번째)은 엽서가 잘리지 않도록 자르지 않고 전체가 보이도록 둡니다. */
-.postcard-gallery img[data-postcard-image="0"],.postcard-gallery img[data-postcard-image="2"]{object-fit:contain;background:#e8e3da}
+/* 엽서 대표 이미지는 정사각 사진이므로 틀도 정사각으로 맞춰 여백 없이 채웁니다. */
+.shop-postcard-art{aspect-ratio:1/1}
 .postcard-gallery-counter{position:absolute;z-index:2;right:12px;bottom:12px;display:flex;align-items:center;gap:1px;padding:5px 12px;border:0;border-radius:99px;background:rgba(20,18,16,.55);color:#fff;font-size:12px;font-weight:600;letter-spacing:.02em;cursor:pointer;backdrop-filter:blur(2px);transition:background .2s}
 .postcard-gallery-counter:hover{background:rgba(20,18,16,.75)}
 
