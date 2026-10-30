@@ -5,7 +5,8 @@ import { usePathname } from "next/navigation";
 import { FullReloadLink } from "@/components/FullReloadLink";
 
 const navigation = [
-  { href: "/portfolio", label: "Portfolio", active: ["/portfolio", "/works", "/gallery", "/illustration", "/artist", "/shop"] },
+  { href: "/portfolio", label: "Portfolio", active: ["/portfolio", "/works", "/gallery", "/illustration", "/shop"] },
+  { href: "/artist", label: "Artist", active: ["/artist"] },
   { href: "/programs", label: "Program", active: ["/programs"] },
   { href: "/about", label: "About", active: ["/about", "/beyond", "/journal", "/journey", "/people", "/notes"] },
   { href: "/contact", label: "Contact", active: ["/contact"] }

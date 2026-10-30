@@ -299,11 +299,34 @@ class SeasonEffect {
 }
 
 class SpringEffect extends SeasonEffect {
+  /* 꽃잎을 창문 유리 전체(왼쪽 끝 ~ 오른쪽 끝)에 고르게 뿌리기 위해, site.js가 매번 다시 계산해
+     Hero에 적어두는 창문 영역(%)을 읽어옵니다. 화면 크기에 따라 창문의 위치·너비가 달라지므로
+     고정값 대신 이 값을 써야 오른쪽 유리에도 똑같이 꽃잎이 내립니다. */
+  windowBox() {
+    const hero = this.root.closest('.portfolio-hero') || document.documentElement;
+    const style = getComputedStyle(hero);
+    const read = (name, fallback) => {
+      const value = parseFloat(style.getPropertyValue(name));
+      return Number.isFinite(value) ? value : fallback;
+    };
+    return {
+      left: read('--season-window-left', 2),
+      top: read('--season-window-top', 0),
+      width: read('--season-window-width', 64),
+      height: read('--season-window-height', 58)
+    };
+  }
+
   start() {
-    /* 화사한 봄 느낌이 더 나도록 꽃잎을 촘촘히(이전 대비 다시 2~3배) 뿌리되, 시작 지연에 흔들림을
-       줘서 한꺼번에 쏟아지는 느낌은 피합니다. 계절은 6초만 보이므로 처음 2초 안에 밀도가 차오르게 합니다. */
-    for (let i = 0; i < 32; i += 1) {
-      this.spawn(i * 60 + this.random(0, 70));
+    /* 계절은 6초만 보입니다. 지연을 두고 뿌리면 처음 2초 동안 화면이 비어 보여서, 벚꽃만
+       다른 계절보다 짧게 내리는 것처럼 느껴집니다. 그래서 첫 묶음은 지연을 음수로 줘서
+       (= 이미 떨어지는 중인 상태로 시작) 봄이 나타나는 순간부터 창문이 꽉 차 보이게 하고,
+       그 뒤로는 평소처럼 이어서 뿌립니다. */
+    for (let i = 0; i < 34; i += 1) {
+      this.spawn(-this.random(300, 8200));
+    }
+    for (let i = 0; i < 10; i += 1) {
+      this.spawn(i * 90 + this.random(0, 80));
     }
   }
 
@@ -312,22 +335,28 @@ class SpringEffect extends SeasonEffect {
       this.schedule(() => this.spawn(), this.random(200, 480));
       return;
     }
-    const duration = this.random(9, 12);
+    /* 가벼운 꽃잎처럼 보이도록 낙하 속도를 늦추고, 좌우 흔들림을 더 크게 줍니다. */
+    const duration = this.random(12, 16);
     const direction = Math.random() < .5 ? -1 : 1;
     const rotationSpread = this.random(10, 22);
+    const area = this.windowBox();
     const fall = document.createElement('span');
     fall.className = 'spring-fall';
     const styles = {
-      '--size': `${this.random(6, 10)}px`,
-      /* .hero-fx는 Hero 전체(.hero-art) 기준이므로 창문이 있는 왼쪽~중앙 영역에서 시작하도록 합니다.
+      /* 풍선처럼 둥글고 커 보이지 않도록 크기를 이전의 3분의 2로 줄이고, 꽃잎을 정면이 아니라
+         살짝 눕혀 본 것처럼 세로로 눌러(--petal-flat) 납작한 타원으로 보이게 합니다. */
+      '--size': `${this.random(4, 6.7)}px`,
+      '--petal-flat': `${this.random(.42, .66)}`,
+      /* .hero-fx는 Hero 전체(.hero-art) 기준이므로, 창문 유리의 실제 좌우 범위 안에서 시작 위치를
+         고릅니다 — 창문 왼쪽 끝부터 오른쪽 끝까지 고르게 내립니다.
          창틀 밖(벽·실내)으로 흘러간 꽃잎은 위에 얹힌 불투명 foreground가 가려줍니다. */
-      '--top': `${this.random(-6, 18)}%`,
-      '--left': `${this.random(2, 66)}%`,
+      '--top': `${this.random(area.top - 8, area.top + area.height * .35)}%`,
+      '--left': `${this.random(area.left + .5, area.left + area.width - 2)}%`,
       '--duration': `${duration}s`,
       '--delay': `${delay}ms`,
       '--drift': `${this.random(1.5, 4) * direction}vw`,
-      '--sway': `${this.random(1.2, 3.2)}vw`,
-      '--sway-duration': `${this.random(2.8, 4.8)}s`,
+      '--sway': `${this.random(2.2, 4.4)}vw`,
+      '--sway-duration': `${this.random(3.2, 5.2)}s`,
       /* 회전 방향과 폭을 꽃잎마다 다르게 줘서 같은 동작이 반복되지 않도록 합니다. */
       '--rotate-start': `${-rotationSpread / 2 * direction}deg`,
       '--rotate-end': `${rotationSpread * direction}deg`,
@@ -684,8 +713,11 @@ function initSeasonEffects() {
   let isChanging = false;
   const seasonDuration = 6000;
   const transitionDuration = 1000;
-  /* 여름은 새가 창틀 뒤로 완전히 사라질 때까지(약 5.9초) 보여준 뒤 가을로 넘어갑니다. */
-  const durationFor = (season) => (season === 'summer' ? 7000 : seasonDuration);
+  /* 여름 GIF는 반복 없이 한 번만 재생되고, 흰 새가 창틀 뒤로 사라지면서 약 3.5초에 끝납니다
+     (프레임을 0.2초 간격으로 비교해 확인). 그 뒤로는 마지막 장면이 멈춘 채 남으므로,
+     새가 사라지는 순간 바로 가을 전환이 시작되도록 맞춥니다. GIF를 다시 만들어 길이가
+     달라지면 이 값도 같이 바꿔주세요. */
+  const durationFor = (season) => (season === 'summer' ? 3600 : seasonDuration);
 
   const heroArt = hero.querySelector('.hero-art');
 
@@ -710,6 +742,12 @@ function initSeasonEffects() {
       return;
     }
     windowArea.style.display = '';
+    /* 창문 유리의 실제 범위를 Hero에 적어두면, 봄 꽃잎 효과가 이 값을 읽어 창문 전체에
+       고르게 꽃잎을 뿌릴 수 있습니다(SpringEffect.windowBox 참고). */
+    hero.style.setProperty('--season-window-left', `${box.left}`);
+    hero.style.setProperty('--season-window-top', `${box.top}`);
+    hero.style.setProperty('--season-window-width', `${box.width}`);
+    hero.style.setProperty('--season-window-height', `${box.height}`);
     windowArea.style.left = `${box.left}%`;
     windowArea.style.top = `${box.top}%`;
     windowArea.style.width = `${box.width}%`;
@@ -830,14 +868,31 @@ contactForm?.addEventListener('submit', async (event) => {
 
   const submitButton = contactForm.querySelector('button[type="submit"]');
   const formData = new FormData(contactForm);
+  /* 문의 양식이 여러 항목으로 나뉘어 있으므로, data-summary-label이 붙은 입력란 중
+     실제로 채워진 것만 "항목: 내용" 형태로 모아 하나의 문의 내용으로 만들어 보냅니다
+     (/api/contact는 name·email·message만 받습니다). */
+  const details = [];
+  contactForm.querySelectorAll('[data-summary-label]').forEach((field) => {
+    const value = String(field.value || '').trim();
+    if (!value) return;
+    const label = field.dataset.summaryLabel;
+    details.push(value.includes('\n') ? `${label}:\n${value}` : `${label}: ${value}`);
+  });
   const payload = {
     name: formData.get('name'),
     email: formData.get('email'),
-    message: formData.get('message')
+    message: details.join('\n\n')
   };
 
-  submitButton.disabled = true;
   contactStatus.removeAttribute('data-state');
+
+  if (!payload.message) {
+    contactStatus.dataset.state = 'error';
+    contactStatus.textContent = '문의 종류를 고르시거나, 문의 내용을 한 가지 이상 적어주세요.';
+    return;
+  }
+
+  submitButton.disabled = true;
   contactStatus.textContent = '전송 중입니다...';
 
   try {
