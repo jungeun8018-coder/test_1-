@@ -883,7 +883,7 @@ body{letter-spacing:-.012em;text-rendering:optimizeLegibility}
 .shop-hero .section-inner{max-width:960px}
 .shop-hero h1{margin-bottom:27px;font-family:var(--sans);font-size:clamp(38px,6vw,58px);font-weight:500;line-height:1.35;letter-spacing:-.055em}
 .shop-hero .lead{font-size:18px}
-.shop-collection{padding-top:100px!important}
+.shop-collection{padding-top:56px!important}
 .shop-heading{max-width:680px;margin-bottom:84px}
 .shop-heading h2{margin-bottom:22px!important;font-family:var(--sans)!important;font-size:clamp(28px,4vw,37px)!important;font-weight:500!important;line-height:1.45!important;letter-spacing:-.04em!important}
 .shop-heading>p:last-child{margin:0;color:#626a63}
@@ -1075,10 +1075,10 @@ a.shop-buy-button{display:inline-flex;align-items:center;justify-content:center;
   .program-process h3{font-size:18px}
   .program-result{margin-top:68px;padding:35px 0}
 
-  .shop-hero{padding-bottom:72px}
+  .shop-hero{padding:104px 24px 30px}
   .shop-hero h1{font-size:35px;line-height:1.4}
   .shop-hero .lead{font-size:16px}
-  .shop-collection{padding-top:76px!important}
+  .shop-collection{padding-top:26px!important}
   .shop-heading{margin-bottom:57px}
   .shop-list{gap:28px}
   .shop-item{grid-template-columns:1fr;gap:26px;padding:24px;border-radius:18px}
@@ -1369,4 +1369,54 @@ body>.portfolio-site.shop-site{background:#faf6f0}
   .home-journal-list h3{font-size:18px}
   /* 모바일: Artist 사진을 가운데 정렬 + 살짝 키워 전체 분위기와 맞춤 */
   .home-artist .portrait-frame{max-width:340px;margin-inline:auto}
+}
+
+/* =========================================================================
+   Shop — 모바일 구매 흐름 정리
+   ========================================================================= */
+
+/* 상품 사진 3장을 한 단계 밝고 또렷하게. 원본 파일은 그대로 두고 표시만 보정합니다. */
+.postcard-gallery img{filter:brightness(1.07) contrast(1.05) saturate(1.05)}
+
+/* 정가에 취소선을 긋고 할인율과 판매가를 나란히 둬서 할인된 가격임이 바로 보이게 합니다. */
+.shop-price{display:inline-flex;flex-wrap:wrap;align-items:baseline;gap:7px;font-style:normal}
+.shop-price s{color:#a79e94;font-size:.8em;font-weight:500;text-decoration-thickness:1px;text-decoration-color:#c3bab0}
+.shop-price-off{color:#c0492a;font-size:.86em;font-weight:700;letter-spacing:-.01em}
+.shop-price-now{color:var(--sage-dark);font-weight:700}
+.shop-set-card .shop-price{display:flex;margin-bottom:16px}
+
+/* 모바일 고정 구매 바 — 화면을 내려도 '바로 구매'가 항상 손끝에 있도록 둡니다. */
+.shop-sticky-buy{display:none}
+
+@media (min-width:700px){
+  /* 데스크톱 히어로: 모바일에서 보이는 비율만큼 제목·버튼을 키워 첫 화면의 무게를 맞춥니다. */
+  .home .portfolio-hero .hero-content .eyebrow{margin-bottom:20px;font-size:15px;letter-spacing:.2em}
+  .home .portfolio-hero h1{max-width:none;margin-bottom:24px;font-size:clamp(44px,4.8vw,66px);line-height:1.14}
+  .home .home-shop-cta{gap:12px;margin-top:30px;padding:19px 38px;font-size:18px}
+}
+
+@media (max-width:699px){
+  .shop-hero h1{font-size:30px}
+  .shop-item{padding:20px 18px 24px}
+  #art-postcard .shop-description{margin-bottom:26px;font-size:15px;line-height:1.95}
+  .shop-set-options{gap:10px;margin-bottom:26px}
+  .shop-set-options li{padding:16px 16px;gap:10px}
+  /* 세트 이름과 가격이 한 줄에 다 안 들어가면 가격이 다음 줄로 자연스럽게 내려가게 둡니다. */
+  .shop-set-head{flex-wrap:wrap;row-gap:4px}
+  .shop-set-head em.shop-price{font-size:15px}
+  .shop-set-head em.shop-price s{font-size:12px}
+  .shop-launch-note{margin-bottom:24px;padding:14px 16px;font-size:13.5px}
+  .shop-set-ship{margin-bottom:20px;font-size:12.5px}
+
+  .shop-sticky-buy{position:fixed;z-index:90;right:0;bottom:0;left:0;display:block;padding:10px 16px calc(10px + env(safe-area-inset-bottom));border-top:1px solid rgba(92,58,40,.14);background:rgba(255,253,249,.97);box-shadow:0 -8px 24px rgba(48,34,26,.14);backdrop-filter:blur(8px)}
+  .shop-sticky-inner{display:flex;align-items:center;gap:12px;width:min(100%,520px);margin:auto}
+  .shop-sticky-price{display:flex;flex:1;flex-direction:column;gap:2px;min-width:0;margin:0}
+  .shop-sticky-name{overflow:hidden;color:#8a8078;font-size:11.5px;line-height:1.4;text-overflow:ellipsis;white-space:nowrap}
+  .shop-sticky-amount{display:flex;align-items:baseline;gap:6px;line-height:1.2}
+  .shop-sticky-amount s{color:#a79e94;font-size:12.5px;text-decoration-thickness:1px;text-decoration-color:#c3bab0}
+  .shop-sticky-amount strong{color:var(--sage-dark);font-size:18px;font-weight:700;letter-spacing:-.01em}
+  .shop-sticky-button{flex:0 0 auto;width:auto;min-width:130px;min-height:50px;border-radius:12px;font-size:15px}
+  /* 고정 바가 푸터와 '맨 위로' 버튼을 가리지 않도록 자리를 비워 둡니다. */
+  body:has(.shop-sticky-buy) .site-footer{padding-bottom:100px}
+  body:has(.shop-sticky-buy) .back-to-top{bottom:88px}
 }
