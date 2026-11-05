@@ -943,7 +943,7 @@ a.shop-buy-button{display:inline-flex;align-items:center;justify-content:center;
 .shop-detail-inner{width:min(100%,820px);margin:auto}
 .shop-detail-intro{margin-bottom:80px;text-align:center}
 .shop-detail-intro h2{margin-bottom:28px!important;font-family:var(--sans)!important;font-size:clamp(28px,4vw,37px)!important;font-weight:500!important;line-height:1.45!important;letter-spacing:-.04em!important}
-.shop-detail-intro>p:last-child{margin:0;color:#626a63;font-size:16px;line-height:2}
+.shop-detail-intro>p:not(.eyebrow){margin:0;color:#626a63;font-size:16px;line-height:2}
 .shop-detail-block{padding:46px 0;border-top:1px solid var(--line)}
 .shop-detail-photo{margin:0 0 46px}
 .shop-detail-block .shop-detail-photo{margin:36px 0 0}
@@ -986,8 +986,8 @@ a.shop-buy-button{display:inline-flex;align-items:center;justify-content:center;
 .shop-detail-cta p{margin-bottom:20px;color:#626a63}
 @media (max-width:699px){
   .shop-detail-intro{margin-bottom:50px}
-  .shop-detail-intro>p:last-child{font-size:15px}
-  .shop-detail-intro>p:last-child br{display:none}
+  .shop-detail-intro>p:not(.eyebrow){font-size:15px}
+  .shop-detail-intro>p:not(.eyebrow) br{display:none}
   .shop-detail-block{padding:36px 0}
   .shop-design-list,.shop-set-grid{grid-template-columns:1fr}
   .shop-info-table>div{grid-template-columns:96px 1fr;font-size:14px}
@@ -1475,4 +1475,59 @@ ul.shop-set-items li:before{content:"";position:absolute;top:.78em;left:0;width:
   .shop-faq summary{padding:17px 2px;font-size:15px}
   .shop-faq details p{padding:0 2px 18px 26px;font-size:14.5px;line-height:1.85}
   .shop-detail-photo figcaption{font-size:12.5px;line-height:1.7}
+}
+
+/* =========================================================================
+   Shop 상세 — 상품 구성
+   세트별로 대표 사진 · 엽서 디테일 · 가격 · 구성 설명을 한 흐름으로 읽게 둡니다.
+   ========================================================================= */
+.shop-set-group+.shop-set-group{margin-top:46px;padding-top:40px;border-top:1px solid var(--line)}
+.shop-set-group-title{display:flex;align-items:center;gap:10px;margin:0 0 24px;font-size:20px;font-weight:500;letter-spacing:-.02em}
+.shop-set-design+.shop-set-design{margin-top:42px}
+.shop-set-design-name{margin:0 0 16px;color:var(--sage-dark);font:600 19px/1.5 var(--serif)}
+.shop-detail-block .shop-set-design .shop-detail-photo{margin:0 0 14px}
+
+/* 엽서 디테일 — 인쇄 결이 보이도록 가까이 찍은 사진을 작게 나눠 보여줍니다. */
+.shop-set-closeups{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin:0 0 22px;padding:0;list-style:none}
+.shop-set-closeups img{display:block;width:100%;aspect-ratio:1/1;object-fit:cover;border-radius:14px;background:#efe9e1;filter:brightness(1.04) contrast(1.03) saturate(1.02)}
+
+@media (max-width:699px){
+  .shop-set-group+.shop-set-group{margin-top:36px;padding-top:32px}
+  .shop-set-group-title{margin-bottom:20px;font-size:18px}
+  .shop-set-design+.shop-set-design{margin-top:34px}
+  .shop-set-design-name{margin-bottom:14px;font-size:18px}
+  .shop-set-closeups{gap:10px;margin-bottom:18px}
+}
+
+/* =========================================================================
+   Shop 상세 — 30·40대 독자를 위한 정돈
+   선은 가늘게, 여백은 넓게, 사진에는 옅은 그림자만 둬서 차분하게 읽히도록 합니다.
+   ========================================================================= */
+
+/* 첫 문장은 기호를 앞에 두고 한 톤 진하게 — 글을 시작하는 지점이 바로 보입니다. */
+.shop-detail-intro>p.shop-detail-lead{color:var(--ink);font-weight:500}
+.shop-detail-mark{margin-right:9px;color:var(--sage-dark);font-size:.82em;vertical-align:.1em}
+
+/* 세트 제목 옆으로 가는 선을 늘여 편집물 같은 구분을 만듭니다. */
+.shop-set-group-title:after{content:"";flex:1 1 auto;height:1px;background:var(--line)}
+.shop-set-group-title .shop-set-no{flex:none;width:28px;height:28px}
+
+/* 사진은 테두리 대신 옅은 그림자로 지면에서 살짝 띄웁니다. */
+.shop-set-design .shop-detail-photo img{box-shadow:0 14px 34px rgba(48,34,26,.07)}
+.shop-set-closeups img{box-shadow:0 8px 20px rgba(48,34,26,.06)}
+
+/* 구성 카드 — 베이지 대신 흰 바탕에 가는 선으로, 가격과 구성을 선 하나로 나눕니다. */
+.shop-set-design .shop-set-card{padding:28px 30px;border-radius:18px;border-color:rgba(120,105,90,.15);background:#fff;box-shadow:0 14px 34px rgba(48,34,26,.05)}
+.shop-set-design .shop-set-name{margin-bottom:10px;color:#8c857a;font-size:13px}
+.shop-set-design .shop-set-card .shop-price{margin-bottom:20px;padding-bottom:18px;border-bottom:1px solid var(--line)}
+.shop-set-design .shop-set-card ul{padding-top:0;border-top:0}
+
+/* 디테일 사진이 세 장일 때 빈 칸이 남지 않도록 칸 수를 맞춥니다. */
+@media (min-width:700px){
+  .shop-set-closeups:has(>li:nth-child(3):last-child){grid-template-columns:repeat(3,minmax(0,1fr))}
+}
+@media (max-width:699px){
+  .shop-set-closeups>li:last-child:nth-child(odd){grid-column:1/-1}
+  .shop-set-closeups>li:last-child:nth-child(odd) img{aspect-ratio:16/11}
+  .shop-set-design .shop-set-card{padding:22px 20px}
 }
