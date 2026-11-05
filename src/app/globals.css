@@ -1504,9 +1504,8 @@ ul.shop-set-items li:before{content:"";position:absolute;top:.78em;left:0;width:
    선은 가늘게, 여백은 넓게, 사진에는 옅은 그림자만 둬서 차분하게 읽히도록 합니다.
    ========================================================================= */
 
-/* 첫 문장은 기호를 앞에 두고 한 톤 진하게 — 글을 시작하는 지점이 바로 보입니다. */
-.shop-detail-intro>p.shop-detail-lead{color:var(--ink);font-weight:500}
-.shop-detail-mark{margin-right:9px;color:var(--sage-dark);font-size:.82em;vertical-align:.1em}
+/* 안내 문구 앞의 기호 — 긴 글 사이에서 한 줄이 눈에 걸리게 합니다. */
+.shop-detail-mark{margin-right:7px;color:var(--sage-dark)}
 
 /* 세트 제목 옆으로 가는 선을 늘여 편집물 같은 구분을 만듭니다. */
 .shop-set-group-title:after{content:"";flex:1 1 auto;height:1px;background:var(--line)}
