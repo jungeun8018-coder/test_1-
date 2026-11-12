@@ -1530,7 +1530,10 @@ ul.shop-set-items li:before{content:"";position:absolute;top:.78em;left:0;width:
    정리해 길게 적어 내려가도 부담스럽지 않게 합니다.
    ========================================================================= */
 
-.contact-form-section .section-inner>p{color:#6b6258;font-size:15.5px}
+/* 제목 '문의 양식으로 보내기' 앞뒤를 조금 좁혀, 제목에서 양식까지 한 호흡으로 이어지게 합니다. */
+.portfolio-site .contact-form-section{padding-top:76px}
+.contact-form-section h2{margin-bottom:12px}
+.contact-form-section .section-inner>p{margin-bottom:28px;color:#6b6258;font-size:15.5px}
 .contact-form-preview{gap:24px 22px;padding:clamp(26px,3.4vw,40px);border-radius:20px;border:1px solid rgba(120,105,90,.14);background:#fff;box-shadow:0 18px 44px rgba(48,34,26,.055)}
 .contact-form-preview .form-field label{margin-bottom:9px;color:#6b6258;font-size:13.5px;font-weight:500;letter-spacing:.01em}
 .contact-form-preview .form-field input,
@@ -1552,6 +1555,8 @@ ul.shop-set-items li:before{content:"";position:absolute;top:.78em;left:0;width:
 .contact-form-preview .contact-form-actions .form-help{margin:0}
 
 @media (max-width:699px){
+  .portfolio-site .contact-form-section{padding-top:54px}
+  .contact-form-section .section-inner>p{margin-bottom:24px}
   .contact-form-preview{padding:22px 18px;border-radius:16px}
   .contact-form-preview .contact-form-actions .button{width:100%}
 }
